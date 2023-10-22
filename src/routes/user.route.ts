@@ -1,27 +1,23 @@
-import express from "express";
-import { get } from "http";
-import { createUser, getAllUsers, getUserById, findUser } from "~/services/user.service";
+import { Router } from 'express';
+import UsersController from '~/controllers/user.controller';
+import { Route } from '~/interfaces/route.interface';
 
-const userRouter = express.Router();
+class UsersRoute implements Route {
+    public path = '/users';
+    public router = Router();
+    public usersController = new UsersController();
 
-userRouter.get("/getAll", async (req, res) => {
-    const users = await getAllUsers();
-    res.json(users);
-});
+    constructor() {
+        this.initializeRoutes();
+    }
 
-userRouter.get("/get", async (req, res) => {
-    const user = await getUserById(req.body.id);
-    res.json(user);
-});
+    private initializeRoutes() {
+        this.router.get(`${this.path}`, this.usersController.getUsers);
+        this.router.get(`${this.path}/:id`, this.usersController.getUserById);
+        this.router.post(`${this.path}`, this.usersController.createUser);
+        this.router.put(`${this.path}/:id`, this.usersController.updateUser);
+        this.router.delete(`${this.path}/:id`, this.usersController.deleteUser);
+    }
+}
 
-userRouter.post("/find", async (req, res) => {
-    const users = await findUser(req.body);
-    res.json(users);
-});
-
-userRouter.post("/create", async (req, res) => {
-    const user = await createUser(req.body);
-    res.json(user);
-});
-
-export { userRouter };
+export default UsersRoute;
