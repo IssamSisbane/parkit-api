@@ -1,4 +1,4 @@
-import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from "./config/env.config";
+import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS, URL } from "./config/env.config";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -67,24 +67,30 @@ class App {
 
     private initializeRoutes(routes: Route[]) {
         routes.forEach(route => {
-            this.app.use('/', route.router);
+            this.app.use('/api/v1', route.router);
         });
     }
 
     private initializeSwagger() {
         const options = {
             swaggerDefinition: {
+                openapi: '3.0.0',
                 info: {
                     title: 'REST API PARKIT',
                     version: '1.0.0',
-                    description: 'Docs',
+                    description: 'Docs'
                 },
+                servers: [
+                    {
+                        url: URL, // Chemin de base
+                    },
+                ]
             },
             apis: ['swagger.yaml'],
         };
 
         const specs = swaggerJSDoc(options);
-        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+        this.app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(specs));
     }
 
     private initializeErrorHandling() {

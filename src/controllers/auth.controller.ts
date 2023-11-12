@@ -8,6 +8,7 @@ class AuthController {
 
     public signUp = async (req: Request, res: Response, next: NextFunction) => {
         try {
+            console.log(req)
             const userData: RegisterUserDto = req.body;
             const signUpUserData: IUser = await this.authService.signup(userData);
 
@@ -19,16 +20,18 @@ class AuthController {
 
     public logIn = async (req: Request, res: Response, next: NextFunction) => {
         try {
+            console.log(req.body);
             const userData: RegisterUserDto = req.body;
-            const { cookie, findUser } = await this.authService.login(userData);
+            console.log(userData)
+            const { token } = await this.authService.login(userData);
 
-            res.setHeader('Set-Cookie', [cookie]);
-            res.status(200).json({ data: findUser, message: 'login' });
+            res.status(200).json({ token });
         } catch (error) {
             next(error);
         }
     };
 
+    // to Delete
     public logOut = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userData: IUser = req.user;

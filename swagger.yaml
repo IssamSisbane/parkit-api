@@ -38,13 +38,12 @@ paths:
       tags:
         - Users
       summary: Add User
-      parameters:
-        - name: body
-          in: body
-          description: user Data
-          required: true
-          schema:
-            $ref: "#/definitions/users"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/registerUserDto"
       responses:
         201:
           description: "Created"
@@ -84,12 +83,11 @@ paths:
           in: path
           description: user Id
           required: true
-        - name: body
-          in: body
-          description: user Data
-          required: true
-          schema:
-            $ref: "#/definitions/users"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/users"
       responses:
         200:
           description: "OK"
@@ -118,6 +116,68 @@ paths:
         500:
           description: "Server Error"
 
+  ## AUTH
+  # [POST] auth/login
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/loginUserDto"
+      responses:
+        200:
+          description: "OK"
+        400:
+          description: "Bad Request"
+        401:
+          description: "Wrong authentication token"
+        404:
+          description: "Authentication token missing"
+        500:
+          description: "Server Error"
+
+  # [POST] auth/signin
+  /auth/signin:
+    post:
+      tags:
+        - Auth
+      summary: Register
+      requestBody:
+        description: user Data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/registerUserDto"
+      responses:
+        201:
+          description: "Created"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  # [POST] auth/logout
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Logout
+      responses:
+        200:
+          description: "OK"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Server Error"
+
 # definitions
 definitions:
   users:
@@ -132,6 +192,38 @@ definitions:
       password:
         type: string
         description: user Password
+  loginUserDto:
+    type: object
+    required:
+      - email
+      - password
+    properties:
+      email:
+        type: string
+        description: user Email
+      password:
+        type: string
+        description: user Password
+  registerUserDto:
+    type: object
+    required:
+      - email
+      - password
+      - firstName
+      - lastName
+    properties:
+      email:
+        type: string
+        description: user Email
+      password:
+        type: string
+        description: user Password
+      firstName:
+        type: string
+        description: user First Name
+      lastName:
+        type: string
+        description: user Last Name
 
 schemes:
   - https
