@@ -1,4 +1,5 @@
 import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS, URL } from "./config/env.config";
+import { SWAGGER_OPTIONS } from "./config/swagger.config";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -29,10 +30,11 @@ class App {
 
     public listen() {
         this.app.listen(this.port, () => {
-            console.log(`=================================`);
-            console.log(`======= ENV: ${this.env} =======`);
+            console.log(`=====================================`);
+            console.log(`========= ENV: ${this.env} ==========`);
             console.log(`🚀 App listening on the port ${this.port}`);
-            console.log(`=================================`);
+            console.log(`Docs at ${URL}`);
+            console.log(`=====================================`);
         });
     }
 
@@ -72,33 +74,7 @@ class App {
     }
 
     private initializeSwagger() {
-        const options = {
-            swaggerDefinition: {
-                openapi: '3.0.0',
-                info: {
-                    title: 'REST API PARKIT',
-                    version: '1.0.0',
-                    description: 'Docs'
-                },
-                servers: [
-                    {
-                        url: URL, // Chemin de base
-                    },
-                ],
-                components: {
-                    securitySchemes: {
-                        bearerAuth: {
-                            type: 'http',
-                            scheme: 'bearer',
-                            bearerFormat: 'JWT'
-                        }
-                    },
-                }
-            },
-            apis: ['swagger.yaml'],
-        };
-
-        const specs = swaggerJSDoc(options);
+        const specs = swaggerJSDoc(SWAGGER_OPTIONS);
         this.app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(specs));
     }
 

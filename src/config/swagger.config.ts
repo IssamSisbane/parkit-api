@@ -1,13 +1,25 @@
-const outputFile = "./swagger_output.json";
-
-const doc = {
-    info: {
-        title: 'PARKIT API',
-        version: '1.0.0',
-        description: 'API for the PARKIT PTUT Project',
+export const SWAGGER_OPTIONS = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'REST API PARKIT',
+            version: '1.0.0',
+            description: 'API for the PARKIT PTUT Project',
+        },
+        servers: [
+            {
+                url: URL, // Chemin de base
+            },
+        ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT'
+                }
+            },
+        }
     },
-    host: process.env.HOST || 'localhost:3000',
-    basePath: '/api/v1',
-    schemes: [process.env.SCHEME || 'http'],
-};
-
+    apis: ['swagger.yaml']
+}
