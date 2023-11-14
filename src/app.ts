@@ -84,7 +84,16 @@ class App {
                     {
                         url: URL, // Chemin de base
                     },
-                ]
+                ],
+                components: {
+                    securitySchemes: {
+                        bearerAuth: {
+                            type: 'http',
+                            scheme: 'bearer',
+                            bearerFormat: 'JWT'
+                        }
+                    },
+                }
             },
             apis: ['swagger.yaml'],
         };

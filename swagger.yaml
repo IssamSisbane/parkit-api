@@ -24,6 +24,8 @@ paths:
   # [GET] users
   /users:
     get:
+      security:
+        - bearerAuth: []
       tags:
         - Users
       summary: Find All Users
@@ -35,6 +37,8 @@ paths:
 
     # [POST] users
     post:
+      security:
+        - bearerAuth: []
       tags:
         - Users
       summary: Add User
@@ -57,6 +61,8 @@ paths:
   # [GET] users/id
   /users/{id}:
     get:
+      security:
+        - bearerAuth: []
       tags:
         - Users
       summary: Find User By Id
@@ -75,6 +81,8 @@ paths:
 
     # [PUT] users/id
     put:
+      security:
+        - bearerAuth: []
       tags:
         - Users
       summary: Update User By Id
@@ -100,6 +108,8 @@ paths:
 
     # [DELETE] users/id
     delete:
+      security:
+        - bearerAuth: []
       tags:
         - Users
       summary: Delete User By Id
@@ -107,6 +117,112 @@ paths:
         - name: id
           in: path
           description: user Id
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  ## PLACES
+  # [GET] places
+  /places:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Places
+      summary: Find All Places
+      responses:
+        200:
+          description: "OK"
+        500:
+          description: "Server Error"
+
+    # [POST] places
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Places
+      summary: Add Place
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Place"
+      responses:
+        201:
+          description: "Created"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  # [GET] places/id
+  /places/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Places
+      summary: Find Place By Id
+      parameters:
+        - name: id
+          in: path
+          description: Place Id
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+    # [PUT] places/id
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Places
+      summary: Update Place By Id
+      parameters:
+        - name: id
+          in: path
+          description: place Id
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/places"
+      responses:
+        200:
+          description: "OK"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+    # [DELETE] places/id
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Places
+      summary: Delete Place By Id
+      parameters:
+        - name: id
+          in: path
+          description: place Id
           required: true
       responses:
         200:
@@ -166,6 +282,8 @@ paths:
 
   # [POST] auth/logout
   /auth/logout:
+    security:
+      - bearerAuth: []
     post:
       tags:
         - Auth
@@ -180,6 +298,7 @@ paths:
 
 # definitions
 definitions:
+  ## Users
   users:
     type: object
     required:
@@ -224,6 +343,19 @@ definitions:
       lastName:
         type: string
         description: user Last Name
+  ## Places
+  Place:
+    type: object
+    required:
+      - numero
+      - etat
+    properties:
+      numero:
+        type: number
+        description: place number
+      etat:
+        type: string
+        description: place state
 
 schemes:
   - https
