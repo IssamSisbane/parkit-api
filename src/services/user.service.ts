@@ -47,7 +47,7 @@ class UserService {
             userData = { ...userData, password: hashedPassword };
         }
 
-        const updateUserById: IUser | null = await this.users.findByIdAndUpdate(userId, { ...userData, updatedAt: new Date() });
+        const updateUserById: IUser | null = await this.users.findByIdAndUpdate(userId, { ...userData, updatedAt: new Date() }, { new: true });
         if (!updateUserById) throw new HttpException(409, "User doesn't exist");
 
         return updateUserById;

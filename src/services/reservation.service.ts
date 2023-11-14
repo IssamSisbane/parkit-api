@@ -54,7 +54,7 @@ class ReservationService {
     public async updateReservation(reservationId: string, reservationData: IReservation): Promise<IReservation> {
         if (isEmpty(reservationData)) throw new HttpException(400, "userData is empty");
 
-        const updateReservationById: IReservation | null = await this.reservations.findByIdAndUpdate(reservationId, { ...reservationData });
+        const updateReservationById: IReservation | null = await this.reservations.findByIdAndUpdate(reservationId, { ...reservationData }, { new: true });
         if (!updateReservationById) throw new HttpException(409, "User doesn't exist");
 
         return updateReservationById;
