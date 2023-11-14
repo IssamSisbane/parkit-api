@@ -3,12 +3,12 @@ import { verify } from 'jsonwebtoken';
 import { JWT_SECRET } from '~/config/env.config';
 import { HttpException } from '~/exceptions/HttpException';
 import { DataStoredInToken } from '~/interfaces/auth.interface';
-import { User, IUser } from '~/models/user.model';
+import { User } from '~/models/user.model';
 
 
 const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const Authorization = req.cookies['Authorization'] || (req.header('Authorization') ? req.header('Authorization')!.split('Bearer ')[1] : null);
+        const Authorization = req.header('Authorization') ? req.header('Authorization')!.split('Bearer ')[1] : null;
 
         if (Authorization) {
             const secretKey: any = JWT_SECRET;

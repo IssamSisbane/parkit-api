@@ -34,11 +34,17 @@ class AuthController {
     // to Delete
     public logOut = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userData: IUser = req.user;
-            const logOutUserData: IUser = await this.authService.logout(userData);
+            if (!req.user) {
+                throw new Error('Invalid token');
+            }
 
-            res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
-            res.status(200).json({ data: logOutUserData, message: 'logout' });
+            if (req.user) {
+                const userData: IUser = req.user;
+                const logOutUserData: IUser = await this.authService.logout(userData);
+
+                res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
+                res.status(200).json({ data: logOutUserData, message: 'logout' });
+            }
         } catch (error) {
             next(error);
         }
