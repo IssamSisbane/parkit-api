@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import ReservationController from '~/controllers/reservation.controller';
-import { Route } from '~/interfaces/route.interface';
+import { Route } from '~/types/route.type';
 import authMiddleware from '~/middlewares/auth.middleware';
 
 class ReservationsRoute implements Route {

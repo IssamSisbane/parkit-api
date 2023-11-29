@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import UsersController from '~/controllers/user.controller';
-import { Route } from '~/interfaces/route.interface';
+import { Route } from '~/types/route.type';
 import authMiddleware from '~/middlewares/auth.middleware';
 
 class UsersRoute implements Route {

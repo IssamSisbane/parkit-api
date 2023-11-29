@@ -1,12 +1,11 @@
 import mongoose from "mongoose";
 
-interface IPlace {
-    _id?: string;
+type TSpot = {
     numero: Number;
     etat: string;
 }
 
-const placeSchema = new mongoose.Schema<IPlace>({
+const spotSchema = new mongoose.Schema<TSpot>({
     numero: {
         type: Number,
         required: true,
@@ -17,6 +16,6 @@ const placeSchema = new mongoose.Schema<IPlace>({
     },
 });
 
-const Place = mongoose.model("Place", placeSchema, "places");
+const Spot = mongoose.model("Spot", spotSchema, "spots");
 
-export { Place, IPlace, placeSchema };
+export { Spot, TSpot, spotSchema };

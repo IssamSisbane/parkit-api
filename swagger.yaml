@@ -126,34 +126,34 @@ paths:
         500:
           description: "Server Error"
 
-  ## PLACES
-  # [GET] places
-  /places:
+  ## SPOTS
+  # [GET] spots
+  /spots:
     get:
       security:
         - bearerAuth: []
       tags:
-        - Places
-      summary: Find All Places
+        - Spots
+      summary: Find All Spots
       responses:
         200:
           description: "OK"
         500:
           description: "Server Error"
 
-    # [POST] places
+    # [POST] spots
     post:
       security:
         - bearerAuth: []
       tags:
-        - Places
-      summary: Add Place
+        - Spots
+      summary: Add Spot
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/definitions/Place"
+              $ref: "#/definitions/Spot"
       responses:
         201:
           description: "Created"
@@ -164,18 +164,18 @@ paths:
         500:
           description: "Server Error"
 
-  # [GET] places/id
-  /places/{id}:
+  # [GET] spots/id
+  /spots/{id}:
     get:
       security:
         - bearerAuth: []
       tags:
-        - Places
-      summary: Find Place By Id
+        - Spots
+      summary: Find Spot By Id
       parameters:
         - name: id
           in: path
-          description: Place Id
+          description: Spot Id
           required: true
       responses:
         200:
@@ -185,23 +185,23 @@ paths:
         500:
           description: "Server Error"
 
-    # [PUT] places/id
+    # [PUT] spots/id
     put:
       security:
         - bearerAuth: []
       tags:
-        - Places
-      summary: Update Place By Id
+        - Spots
+      summary: Update Spot By Id
       parameters:
         - name: id
           in: path
-          description: place Id
+          description: spot Id
           required: true
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/definitions/places"
+              $ref: "#/definitions/spots"
       responses:
         200:
           description: "OK"
@@ -212,17 +212,17 @@ paths:
         500:
           description: "Server Error"
 
-    # [DELETE] places/id
+    # [DELETE] spots/id
     delete:
       security:
         - bearerAuth: []
       tags:
-        - Places
-      summary: Delete Place By Id
+        - Spots
+      summary: Delete Spot By Id
       parameters:
         - name: id
           in: path
-          description: place Id
+          description: spot Id
           required: true
       responses:
         200:
@@ -343,8 +343,8 @@ definitions:
       lastName:
         type: string
         description: user Last Name
-  ## Places
-  Place:
+  ## Spots
+  Spot:
     type: object
     required:
       - numero
@@ -352,10 +352,10 @@ definitions:
     properties:
       numero:
         type: number
-        description: place number
+        description: spot number
       etat:
         type: string
-        description: place state
+        description: spot state
 
 schemes:
   - https

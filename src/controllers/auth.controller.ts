@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { RegisterUserDto } from '~/dtos/user.dto';
-import { IUser } from '~/interfaces/user.interface';
+import { TRegisterUserDto } from '~/types/dtos/user.dto';
+import { TLoginUserDto } from '~/types/dtos/user.dto';
 import AuthService from '~/services/auth.service';
 
 class AuthController {
@@ -9,8 +9,8 @@ class AuthController {
     public signUp = async (req: Request, res: Response, next: NextFunction) => {
         try {
             console.log(req)
-            const userData: RegisterUserDto = req.body;
-            const signUpUserData: IUser = await this.authService.signup(userData);
+            const userData: TRegisterUserDto = req.body;
+            const signUpUserData: TLoginUserDto = await this.authService.signup(userData);
 
             res.status(201).json({ data: signUpUserData, message: 'signup' });
         } catch (error) {
@@ -21,7 +21,7 @@ class AuthController {
     public logIn = async (req: Request, res: Response, next: NextFunction) => {
         try {
             console.log(req.body);
-            const userData: RegisterUserDto = req.body;
+            const userData: TRegisterUserDto = req.body;
             console.log(userData)
             const { token } = await this.authService.login(userData);
 
@@ -39,8 +39,8 @@ class AuthController {
             }
 
             if (req.user) {
-                const userData: IUser = req.user;
-                const logOutUserData: IUser = await this.authService.logout(userData);
+                const userData: TLoginUserDto = req.user;
+                const logOutUserData: TLoginUserDto = await this.authService.logout(userData);
 
                 res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
                 res.status(200).json({ data: logOutUserData, message: 'logout' });

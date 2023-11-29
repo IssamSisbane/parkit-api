@@ -7,7 +7,7 @@ import { connect, set, disconnect } from "mongoose";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import { dbConnection } from "./config/database.config";
-import { Route } from "~/interfaces/route.interface";
+import { Route } from "~/types/route.type";
 import errorMiddleware from "~/middlewares/error.middleware";
 import cookieParser from "cookie-parser";
 

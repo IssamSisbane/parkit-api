@@ -1,9 +1,9 @@
-import { IUser } from "~/interfaces/user.interface";
+import { TUser } from "~/models/user.model";
 
 declare global {
     namespace Express {
         interface Request {
-            user?: IUser
+            user?: TUser
         }
     }
 }

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { Reservation, IReservation } from '~/models/reservation.model';
+import { Reservation, TReservation } from '~/models/reservation.model';
 import ReservationService from '~/services/reservation.service';
 
 class ReservationsController {
@@ -7,7 +7,7 @@ class ReservationsController {
 
     public getReservations = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const findAllReservationsData: IReservation[] = await this.reservationService.findAllReservations();
+            const findAllReservationsData: TReservation[] = await this.reservationService.findAllReservations();
 
             res.status(200).json({ data: findAllReservationsData, message: 'findAll' });
         } catch (error) {
@@ -18,7 +18,7 @@ class ReservationsController {
     public getReservationById = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const reservationId: string = req.params.id;
-            const findOneReservationData: IReservation = await this.reservationService.findReservationById(reservationId);
+            const findOneReservationData: TReservation = await this.reservationService.findReservationById(reservationId);
 
             res.status(200).json({ data: findOneReservationData, message: 'findOne' });
         } catch (error) {
@@ -28,8 +28,8 @@ class ReservationsController {
 
     public createReservation = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const reservationData: IReservation = req.body;
-            const createReservationData: IReservation = await this.reservationService.createReservation(reservationData);
+            const reservationData: TReservation = req.body;
+            const createReservationData: TReservation = await this.reservationService.createReservation(reservationData);
 
             res.status(201).json({ data: createReservationData, message: 'created' });
         } catch (error) {
@@ -40,8 +40,8 @@ class ReservationsController {
     public updateReservation = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const reservationId: string = req.params.id;
-            const reservationData: IReservation = req.body;
-            const updateReservationData: IReservation = await this.reservationService.updateReservation(reservationId, reservationData);
+            const reservationData: TReservation = req.body;
+            const updateReservationData: TReservation = await this.reservationService.updateReservation(reservationId, reservationData);
 
             res.status(200).json({ data: updateReservationData, message: 'updated' });
         } catch (error) {
@@ -52,7 +52,7 @@ class ReservationsController {
     public deleteReservation = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const reservationId: string = req.params.id;
-            const deleteReservationData: IReservation = await this.reservationService.deleteReservation(reservationId);
+            const deleteReservationData: TReservation = await this.reservationService.deleteReservation(reservationId);
 
             res.status(200).json({ data: deleteReservationData, message: 'deleted' });
         } catch (error) {

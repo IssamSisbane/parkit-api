@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { RegisterUserDto } from '~/dtos/user.dto';
-import { IUser } from '~/interfaces/user.interface';
+import { TRegisterUserDto, TLoginUserDto, TUserDto } from '~/types/dtos/user.dto';
 import userService from '~/services/user.service';
 
 class UsersController {
@@ -8,7 +7,7 @@ class UsersController {
 
     public getUsers = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const findAllUsersData: IUser[] = await this.userService.findAllUser();
+            const findAllUsersData: TUserDto[] = await this.userService.findAllUser();
 
             res.status(200).json({ data: findAllUsersData, message: 'findAll' });
         } catch (error) {
@@ -19,7 +18,7 @@ class UsersController {
     public getUserById = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userId: string = req.params.id;
-            const findOneUserData: IUser = await this.userService.findUserById(userId);
+            const findOneUserData: TUserDto = await this.userService.findUserById(userId);
 
             res.status(200).json({ data: findOneUserData, message: 'findOne' });
         } catch (error) {
@@ -29,8 +28,8 @@ class UsersController {
 
     public createUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userData: RegisterUserDto = req.body;
-            const createUserData: IUser = await this.userService.createUser(userData);
+            const userData: TRegisterUserDto = req.body;
+            const createUserData: TLoginUserDto = await this.userService.createUser(userData);
 
             res.status(201).json({ data: createUserData, message: 'created' });
         } catch (error) {
@@ -41,8 +40,8 @@ class UsersController {
     public updateUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userId: string = req.params.id;
-            const userData: RegisterUserDto = req.body;
-            const updateUserData: IUser = await this.userService.updateUser(userId, userData);
+            const userData: TRegisterUserDto = req.body;
+            const updateUserData: TLoginUserDto = await this.userService.updateUser(userId, userData);
 
             res.status(200).json({ data: updateUserData, message: 'updated' });
         } catch (error) {
@@ -53,7 +52,7 @@ class UsersController {
     public deleteUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userId: string = req.params.id;
-            const deleteUserData: IUser = await this.userService.deleteUser(userId);
+            const deleteUserData: TUserDto = await this.userService.deleteUser(userId);
 
             res.status(200).json({ data: deleteUserData, message: 'deleted' });
         } catch (error) {

@@ -1,32 +1,31 @@
 import mongoose, { Date } from "mongoose";
-import { IUser, User, userSchema } from "./user.model";
-import { IPlace, Place, placeSchema } from "./place.model";
 
-
-interface IReservation {
-    _id?: string;
-    user: IUser;
-    place: IPlace;
-    dateReservation: Date;
-    dateExpiration: Date;
+type TReservation = {
+    user: string;
+    spot: string;
+    createdAt: Date;
+    startedAt: Date;
+    endedAt: Date;
 }
 
-const reservationSchema = new mongoose.Schema<IReservation>({
+const reservationSchema = new mongoose.Schema<TReservation>({
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: true,
-        ref: "User",
     },
-    place: {
-        type: mongoose.Schema.Types.ObjectId,
+    spot: {
+        type: String,
         required: true,
-        ref: "Place",
     },
-    dateReservation: {
+    createdAt: {
         type: Date,
         required: true,
     },
-    dateExpiration: {
+    startedAt: {
+        type: Date,
+        required: true,
+    },
+    endedAt: {
         type: Date,
         required: true,
     },
@@ -34,4 +33,4 @@ const reservationSchema = new mongoose.Schema<IReservation>({
 
 const Reservation = mongoose.model("Reservation", reservationSchema, "reservations");
 
-export { Reservation, IReservation, reservationSchema };
+export { Reservation, TReservation, reservationSchema };

@@ -1,16 +1,19 @@
 import mongoose from "mongoose";
 
-interface IUser {
-    _id?: string;
+type TUser = {
+    _id: string;
+    username: string;
     firstName: string;
     lastName: string;
     email: string;
     password: string;
-    createdAt?: Date;
-    updatedAt?: Date;
 }
 
-const userSchema = new mongoose.Schema<IUser>({
+const userSchema = new mongoose.Schema<TUser>({
+    username: {
+        type: String,
+        required: true,
+    },
     firstName: {
         type: String,
         required: true,
@@ -26,17 +29,9 @@ const userSchema = new mongoose.Schema<IUser>({
     password: {
         type: String,
         required: true,
-    },
-    createdAt: {
-        type: Date,
-        required: false,
-    },
-    updatedAt: {
-        type: Date,
-        required: false,
-    },
+    }
 });
 
 const User = mongoose.model("User", userSchema, "users");
 
-export { User, IUser, userSchema };
+export { User, TUser, userSchema };

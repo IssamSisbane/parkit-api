@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import AuthController from '~/controllers/auth.controller';
-import { Route } from '~/interfaces/route.interface';
+import { Route } from '~/types/route.type';
 import authMiddleware from '~/middlewares/auth.middleware';
 
 class AuthRoute implements Route {
