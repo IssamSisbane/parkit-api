@@ -56,7 +56,7 @@ class App {
             set('debug', true);
         }
 
-        await connect(dbConnection.url);
+        await connect(dbConnection.url!);
     }
 
     private initializeMiddlewares() {
