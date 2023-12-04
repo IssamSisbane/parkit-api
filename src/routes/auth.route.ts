@@ -4,7 +4,7 @@ import { Route } from '~/types/route.type';
 import authMiddleware from '~/middlewares/auth.middleware';
 
 class AuthRoute implements Route {
-    public path = '/auth/';
+    public path = '/auth';
     public router = Router();
     public authController = new AuthController();
 
@@ -13,9 +13,9 @@ class AuthRoute implements Route {
     }
 
     private initializeRoutes() {
-        this.router.post(`${this.path}signup`, this.authController.signUp);
-        this.router.post(`${this.path}login`, this.authController.logIn);
-        this.router.post(`${this.path}logout`, authMiddleware, this.authController.logOut);
+        this.router.post(`${this.path}/register`, this.authController.register);
+        this.router.post(`${this.path}/login`, this.authController.logIn);
+        this.router.post(`${this.path}/logout`, authMiddleware, this.authController.logOut);
     }
 }
 

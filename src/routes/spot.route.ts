@@ -14,7 +14,7 @@ class SpotsRoute implements Route {
 
     private initializeRoutes() {
         this.router.get(`${this.path}`, authMiddleware, this.spotsController.getSpots);
-        this.router.get(`${this.path}/:id`, authMiddleware, this.spotsController.getSpotByNumero);
+        this.router.get(`${this.path}/:id`, authMiddleware, this.spotsController.getSpotBynumber);
         this.router.post(`${this.path}`, authMiddleware, this.spotsController.createSpot);
         this.router.put(`${this.path}/:id`, authMiddleware, this.spotsController.updateSpot);
         this.router.delete(`${this.path}/:id`, authMiddleware, this.spotsController.deleteSpot);

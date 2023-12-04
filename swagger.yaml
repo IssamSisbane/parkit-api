@@ -20,29 +20,39 @@ paths:
         500:
           description: "Server Error"
 
-  ## USERS
-  # [GET] users
-  /users:
-    get:
-      security:
-        - bearerAuth: []
+  ## AUTH
+  # [POST] auth/login
+  /auth/login:
+    post:
       tags:
-        - Users
-      summary: Find All Users
+        - Auth
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/loginUserDto"
       responses:
         200:
           description: "OK"
+        400:
+          description: "Bad Request"
+        401:
+          description: "Wrong authentication token"
+        404:
+          description: "Authentication token missing"
         500:
           description: "Server Error"
 
-    # [POST] users
+  # [POST] auth/register
+  /auth/register:
     post:
-      security:
-        - bearerAuth: []
       tags:
-        - Users
-      summary: Add User
+        - Auth
+      summary: Register
       requestBody:
+        description: user Data
         required: true
         content:
           application/json:
@@ -58,18 +68,49 @@ paths:
         500:
           description: "Server Error"
 
-  # [GET] users/id
-  /users/{id}:
+  # [POST] auth/logout
+  /auth/logout:
+    security:
+      - bearerAuth: []
+    post:
+      tags:
+        - Auth
+      summary: Logout
+      responses:
+        200:
+          description: "OK"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Server Error"
+
+  ## USERS
+  # [GET] users
+  /users:
     get:
       security:
         - bearerAuth: []
       tags:
         - Users
-      summary: Find User By Id
+      summary: Find All Users
+      responses:
+        200:
+          description: "OK"
+        500:
+          description: "Server Error"
+
+  # [GET] users/username
+  /users/{username}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      summary: Find User By username
       parameters:
-        - name: id
+        - name: username
           in: path
-          description: User Id
+          description: User username
           required: true
       responses:
         200:
@@ -85,11 +126,11 @@ paths:
         - bearerAuth: []
       tags:
         - Users
-      summary: Update User By Id
+      summary: Update User By username
       parameters:
-        - name: id
+        - name: username
           in: path
-          description: user Id
+          description: user username
           required: true
       requestBody:
         content:
@@ -112,11 +153,11 @@ paths:
         - bearerAuth: []
       tags:
         - Users
-      summary: Delete User By Id
+      summary: Delete User By username
       parameters:
-        - name: id
+        - name: username
           in: path
-          description: user Id
+          description: user username
           required: true
       responses:
         200:
@@ -232,44 +273,34 @@ paths:
         500:
           description: "Server Error"
 
-  ## AUTH
-  # [POST] auth/login
-  /auth/login:
-    post:
+  ## RESERVATIONS
+  # [GET] reservations
+  /reservations:
+    get:
+      security:
+        - bearerAuth: []
       tags:
-        - Auth
-      summary: Login
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/definitions/loginUserDto"
+        - Reservations
+      summary: Find All Reservations
       responses:
         200:
           description: "OK"
-        400:
-          description: "Bad Request"
-        401:
-          description: "Wrong authentication token"
-        404:
-          description: "Authentication token missing"
         500:
           description: "Server Error"
 
-  # [POST] auth/signin
-  /auth/signin:
+    # [POST] spots
     post:
+      security:
+        - bearerAuth: []
       tags:
-        - Auth
-      summary: Register
+        - Reservations
+      summary: Add Reservation
       requestBody:
-        description: user Data
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/definitions/registerUserDto"
+              $ref: "#/definitions/Reservation"
       responses:
         201:
           description: "Created"
@@ -280,26 +311,116 @@ paths:
         500:
           description: "Server Error"
 
-  # [POST] auth/logout
-  /auth/logout:
-    security:
-      - bearerAuth: []
-    post:
+  # [GET] reservations/id
+  /reservations/{id}:
+    get:
+      security:
+        - bearerAuth: []
       tags:
-        - Auth
-      summary: Logout
+        - Reservations
+      summary: Find Reservation By Id
+      parameters:
+        - name: id
+          in: path
+          description: Reservation Id
+          required: true
       responses:
         200:
           description: "OK"
-        401:
-          description: "Unauthorized"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+    # [PUT] reservations/id
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Reservations
+      summary: Update Reservation By Id
+      parameters:
+        - name: id
+          in: path
+          description: reservation Id
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/reservations"
+      responses:
+        200:
+          description: "OK"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+    # [DELETE] reservations/id
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Reservations
+      summary: Delete Reservation By Id
+      parameters:
+        - name: id
+          in: path
+          description: reservation Id
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  /reservations/getByUser/{username}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Reservations
+      summary: Find Reservation By username
+      parameters:
+        - name: username
+          in: path
+          description: user's username
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  /reservations/getBySpot/{spotId}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Reservations
+      summary: Find Reservation By spotId
+      parameters:
+        - name: spotId
+          in: path
+          description: spot's spotId
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
         500:
           description: "Server Error"
 
 # definitions
 definitions:
   ## Users
-  users:
+  User:
     type: object
     required:
       - email
@@ -347,16 +468,43 @@ definitions:
   Spot:
     type: object
     required:
-      - numero
-      - etat
+      - id
+      - state
     properties:
-      numero:
-        type: number
-        description: spot number
-      etat:
+      id:
+        type: string
+        description: spot id
+      state:
         type: string
         description: spot state
-
+  ## Reservations
+  Reservation:
+    type: object
+    required:
+      - user
+      - spot
+      - createdAt
+      - startedAt
+      - endedAt
+    properties:
+      user:
+        type: string
+        description: user object
+      spot:
+        type: string
+        description: spot object
+      createdAt:
+        type: string
+        format: date-time
+        description: reservation creation date
+      startedAt:
+        type: string
+        format: date-time
+        description: reservation start date
+      endedAt:
+        type: string
+        format: date-time
+        description: reservation end date
 schemes:
   - https
   - http

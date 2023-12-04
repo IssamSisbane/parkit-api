@@ -1,3 +1,5 @@
+import { URL } from './env.config';
+
 export const SWAGGER_OPTIONS = {
     swaggerDefinition: {
         openapi: '3.0.0',

@@ -1,7 +1,7 @@
 export type TRegisterUserDto = {
     username: string;
-    firstName: string;
-    lastName: string;
+    firstname: string;
+    lastname: string;
     email: string;
     password: string;
 }
@@ -13,7 +13,7 @@ export type TLoginUserDto = {
 
 export type TUserDto = {
     username: string;
-    firstName: string;
-    lastName: string;
+    firstname: string;
+    lastname: string;
     email: string;
 }

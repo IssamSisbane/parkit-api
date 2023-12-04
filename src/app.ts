@@ -33,7 +33,7 @@ class App {
             console.log(`=====================================`);
             console.log(`========= ENV: ${this.env} ==========`);
             console.log(`🚀 App listening on the port ${this.port}`);
-            console.log(`Docs at ${URL}`);
+            console.log(`Docs at ${URL}/docs`);
             console.log(`=====================================`);
         });
     }

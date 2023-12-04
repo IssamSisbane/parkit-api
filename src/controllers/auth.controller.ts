@@ -6,13 +6,13 @@ import AuthService from '~/services/auth.service';
 class AuthController {
     public authService = new AuthService();
 
-    public signUp = async (req: Request, res: Response, next: NextFunction) => {
+    public register = async (req: Request, res: Response, next: NextFunction) => {
         try {
             console.log(req)
             const userData: TRegisterUserDto = req.body;
-            const signUpUserData: TLoginUserDto = await this.authService.signup(userData);
+            const registerUserData: TLoginUserDto = await this.authService.register(userData);
 
-            res.status(201).json({ data: signUpUserData, message: 'signup' });
+            res.status(201).json({ data: registerUserData, message: 'register' });
         } catch (error) {
             next(error);
         }

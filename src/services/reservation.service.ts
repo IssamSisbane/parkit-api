@@ -4,6 +4,7 @@ import { Reservation, TReservation } from '~/models/reservation.model';
 import { TUser } from '~/models/user.model';
 import { isEmpty } from '~/utils/util';
 
+
 class ReservationService {
     public reservations = Reservation;
 
@@ -13,28 +14,28 @@ class ReservationService {
     }
 
     public async findReservationById(reservationId: string): Promise<TReservation> {
-        if (isEmpty(reservationId)) throw new HttpException(400, "UserId is empty");
+        if (isEmpty(reservationId)) throw new HttpException(400, "reservationId is empty");
 
         const findReservation: TReservation | null = await this.reservations.findOne({ _id: reservationId });
+        if (!findReservation) throw new HttpException(409, "reservation doesn't exist");
+
+        return findReservation;
+    }
+
+    public async findReservationByUser(username: string): Promise<TReservation> {
+        if (isEmpty(username)) throw new HttpException(400, "username is empty");
+
+        const findReservation: TReservation | null = await this.reservations.findOne({ user: username });
         if (!findReservation) throw new HttpException(409, "User doesn't exist");
 
         return findReservation;
     }
 
-    public async findReservationByUser(user: TUser): Promise<TReservation> {
-        if (isEmpty(user)) throw new HttpException(400, "UserId is empty");
+    public async findReservationBySpot(spotId: string): Promise<TReservation> {
+        if (isEmpty(spotId)) throw new HttpException(400, "spotId is empty");
 
-        const findReservation: TReservation | null = await this.reservations.findOne({ user: user });
-        if (!findReservation) throw new HttpException(409, "User doesn't exist");
-
-        return findReservation;
-    }
-
-    public async findReservationBySpot(spot: TSpot): Promise<TReservation> {
-        if (isEmpty(spot)) throw new HttpException(400, "UserId is empty");
-
-        const findReservation: TReservation | null = await this.reservations.findOne({ spot: spot });
-        if (!findReservation) throw new HttpException(409, "User doesn't exist");
+        const findReservation: TReservation | null = await this.reservations.findOne({ spot: spotId });
+        if (!findReservation) throw new HttpException(409, "spot doesn't exist");
 
         return findReservation;
     }

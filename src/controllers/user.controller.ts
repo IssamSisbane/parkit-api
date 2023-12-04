@@ -15,10 +15,10 @@ class UsersController {
         }
     };
 
-    public getUserById = async (req: Request, res: Response, next: NextFunction) => {
+    public getUserByUsername = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId: string = req.params.id;
-            const findOneUserData: TUserDto = await this.userService.findUserById(userId);
+            const username: string = req.params.username;
+            const findOneUserData: TUserDto = await this.userService.findUserByUsername(username);
 
             res.status(200).json({ data: findOneUserData, message: 'findOne' });
         } catch (error) {
@@ -39,9 +39,9 @@ class UsersController {
 
     public updateUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId: string = req.params.id;
+            const username: string = req.params.username;
             const userData: TRegisterUserDto = req.body;
-            const updateUserData: TLoginUserDto = await this.userService.updateUser(userId, userData);
+            const updateUserData: TLoginUserDto = await this.userService.updateUser(username, userData);
 
             res.status(200).json({ data: updateUserData, message: 'updated' });
         } catch (error) {
@@ -51,8 +51,8 @@ class UsersController {
 
     public deleteUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId: string = req.params.id;
-            const deleteUserData: TUserDto = await this.userService.deleteUser(userId);
+            const username: string = req.params.username;
+            const deleteUserData: TUserDto = await this.userService.deleteUser(username);
 
             res.status(200).json({ data: deleteUserData, message: 'deleted' });
         } catch (error) {

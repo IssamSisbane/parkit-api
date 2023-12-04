@@ -10,42 +10,42 @@ class SpotService {
         return spots;
     }
 
-    public async findSpotByNumero(numero: Number): Promise<TSpot> {
-        if (isEmpty(numero)) throw new HttpException(400, "UserId is empty");
+    public async findSpotById(id: string): Promise<TSpot> {
+        if (isEmpty(id)) throw new HttpException(400, "spotId is empty");
 
-        const findUser: TSpot | null = await this.spots.findOne({ numero: numero });
-        if (!findUser) throw new HttpException(409, "User doesn't exist");
+        const foundSpot: TSpot | null = await this.spots.findOne({ id: id });
+        if (!foundSpot) throw new HttpException(409, "Spot doesn't exist");
 
-        return findUser;
+        return foundSpot;
     }
 
     public async createSpot(spotData: TSpot): Promise<TSpot> {
-        if (isEmpty(spotData)) throw new HttpException(400, "userData is empty");
+        if (isEmpty(spotData)) throw new HttpException(400, "spotData is empty");
 
-        const foundSpot: TSpot | null = await this.spots.findOne({ numero: spotData.numero });
-        if (foundSpot) throw new HttpException(409, `This numero ${spotData.numero} already exists`);
+        const foundSpot: TSpot | null = await this.spots.findOne({ id: spotData.id });
+        if (foundSpot) throw new HttpException(409, `This id ${spotData.id} already exists`);
 
         const createSpotData: TSpot = await this.spots.create({ ...spotData });
 
         return createSpotData;
     }
 
-    public async updateSpot(numero: Number, spotData: TSpot): Promise<TSpot> {
+    public async updateSpot(id: string, spotData: TSpot): Promise<TSpot> {
         if (isEmpty(spotData)) throw new HttpException(400, "spotData is empty");
 
-        if (spotData.numero) {
-            const foundSpot: TSpot | null = await this.spots.findOne({ numero: spotData.numero });
-            if (foundSpot && foundSpot.numero != numero) throw new HttpException(409, `This numero ${spotData.numero} already exists`);
+        if (spotData.id) {
+            const foundSpot: TSpot | null = await this.spots.findOne({ id: spotData.id });
+            if (foundSpot && foundSpot.id != id) throw new HttpException(409, `This id ${spotData.id} already exists`);
         }
 
-        const updateSpotByNumero: TSpot | null = await this.spots.findOneAndUpdate({ numero }, { ...spotData }, { new: true });
-        if (!updateSpotByNumero) throw new HttpException(409, "User doesn't exist");
+        const updateSpotById: TSpot | null = await this.spots.findOneAndUpdate({ id }, { ...spotData }, { new: true, runValidators: true });
+        if (!updateSpotById) throw new HttpException(409, "Spot doesn't exist");
 
-        return updateSpotByNumero;
+        return updateSpotById;
     }
 
-    public async deleteSpot(numero: Number): Promise<TSpot> {
-        const deleteSpotById: TSpot | null = await this.spots.findByIdAndDelete(numero);
+    public async deleteSpot(id: string): Promise<TSpot> {
+        const deleteSpotById: TSpot | null = await this.spots.findOneAndDelete({ id });
         if (!deleteSpotById) throw new HttpException(409, "Spot doesn't exist");
 
         return deleteSpotById;

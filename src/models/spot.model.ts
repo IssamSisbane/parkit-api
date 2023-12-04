@@ -1,17 +1,24 @@
 import mongoose from "mongoose";
 
+enum SpotState {
+    free = "free",
+    occupied = "occupied",
+    reserved = "reserved",
+}
+
 type TSpot = {
-    numero: Number;
-    etat: string;
+    id: string;
+    state: SpotState;
 }
 
 const spotSchema = new mongoose.Schema<TSpot>({
-    numero: {
-        type: Number,
+    id: {
+        type: String,
         required: true,
     },
-    etat: {
+    state: {
         type: String,
+        enum: ["free", "occupied", "reserved"],
         required: true,
     },
 });

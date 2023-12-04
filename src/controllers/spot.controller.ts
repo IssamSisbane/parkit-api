@@ -15,10 +15,10 @@ class SpotsController {
         }
     };
 
-    public getSpotByNumero = async (req: Request, res: Response, next: NextFunction) => {
+    public getSpotBynumber = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const numero: Number = parseInt(req.params.id);
-            const findOneSpotData: TSpot = await this.spotService.findSpotByNumero(numero);
+            const id: string = req.params.id;
+            const findOneSpotData: TSpot = await this.spotService.findSpotById(id);
 
             res.status(200).json({ data: findOneSpotData, message: 'findOne' });
         } catch (error) {
@@ -39,7 +39,7 @@ class SpotsController {
 
     public updateSpot = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const spotId: Number = parseInt(req.params.id);
+            const spotId: string = req.params.id;
             const spotData: TSpot = req.body;
             const updateSpotData: TSpot = await this.spotService.updateSpot(spotId, spotData);
 
@@ -51,7 +51,7 @@ class SpotsController {
 
     public deleteSpot = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const spotId: Number = parseInt(req.params.id);
+            const spotId: string = req.params.id;
             const deleteSpotData: TSpot = await this.spotService.deleteSpot(spotId);
 
             res.status(200).json({ data: deleteSpotData, message: 'deleted' });

@@ -1,7 +1,7 @@
-import { DB_URL } from '~/config/env.config';
+import { DB_URI } from '~/config/env.config';
 
 export const dbConnection = {
-    url: DB_URL,
+    url: DB_URI,
     options: {
         useNewUrlParser: true,
         useUnifiedTopology: true,

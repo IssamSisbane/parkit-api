@@ -10,7 +10,7 @@ import { isEmpty } from '~/utils/util';
 class AuthService {
     public users = User;
 
-    public async signup(userData: TRegisterUserDto): Promise<TLoginUserDto> {
+    public async register(userData: TRegisterUserDto): Promise<TLoginUserDto> {
         if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
 
         const findUser: TLoginUserDto | null = await this.users.findOne({ email: userData.email });
