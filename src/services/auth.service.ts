@@ -11,13 +11,13 @@ class AuthService {
     public users = User;
 
     public async register(userData: TRegisterUserDto): Promise<TLoginUserDto> {
-        if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
+        if (isEmpty(userData)) throw new HttpException(400, "Les données de l'utilisateur fournies sont vides.");
 
         const foundUserEmail: TLoginUserDto | null = await this.users.findOne({ email: userData.email });
-        if (foundUserEmail) throw new HttpException(409, `This email '${userData.email}' already exists`);
+        if (foundUserEmail) throw new HttpException(409, `L'email '${userData.email}' est déjà utilisé.`);
 
         const foundUserUsername: TLoginUserDto | null = await this.users.findOne({ username: userData.username });
-        if (foundUserUsername) throw new HttpException(409, `This username '${userData.username}' already exists`);
+        if (foundUserUsername) throw new HttpException(409, `Le pseudo '${userData.username}' est déjà utilisé.`);
 
         const hashedPassword = await hash(userData.password, 10);
         const createUserData: TLoginUserDto | null = await this.users.create({ ...userData, password: hashedPassword });
@@ -26,13 +26,13 @@ class AuthService {
     }
 
     public async login(userData: TLoginUserDto): Promise<TDataToken> {
-        if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
+        if (isEmpty(userData)) throw new HttpException(400, "Les données de l'utilisateur fournies sont vides.");
 
         const foundUser: TUser | null = await this.users.findOne({ username: userData.username });
-        if (!foundUser) throw new HttpException(409, `This username '${userData.username}' was not found`);
+        if (!foundUser) throw new HttpException(409, `Le pseudo '${userData.username}' n'existe pas`);
 
         const isPasswordMatching: boolean = await compare(userData.password, foundUser.password);
-        if (!isPasswordMatching) throw new HttpException(409, "Password is not matching");
+        if (!isPasswordMatching) throw new HttpException(409, "Le mot de passe est incorrect.");
 
         const TDataToken = this.createToken(foundUser);
 

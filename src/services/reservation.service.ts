@@ -14,37 +14,37 @@ class ReservationService {
     }
 
     public async findReservationById(reservationId: string): Promise<TReservation> {
-        if (isEmpty(reservationId)) throw new HttpException(400, "reservationId is empty");
+        if (isEmpty(reservationId)) throw new HttpException(400, "L'id de la reservation est vide.");
 
         const findReservation: TReservation | null = await this.reservations.findOne({ _id: reservationId });
-        if (!findReservation) throw new HttpException(409, "reservation doesn't exist");
+        if (!findReservation) throw new HttpException(409, "La reservation n'existe pas.");
 
         return findReservation;
     }
 
     public async findReservationByUser(username: string): Promise<TReservation> {
-        if (isEmpty(username)) throw new HttpException(400, "username is empty");
+        if (isEmpty(username)) throw new HttpException(400, "Le nom d'utilisateur est vide.");
 
         const findReservation: TReservation | null = await this.reservations.findOne({ user: username });
-        if (!findReservation) throw new HttpException(409, "User doesn't exist");
+        if (!findReservation) throw new HttpException(409, "L'utilisateur n'existe pas.");
 
         return findReservation;
     }
 
     public async findReservationBySpot(spotId: string): Promise<TReservation> {
-        if (isEmpty(spotId)) throw new HttpException(400, "spotId is empty");
+        if (isEmpty(spotId)) throw new HttpException(400, "L'id de la place est vide.");
 
         const findReservation: TReservation | null = await this.reservations.findOne({ spot: spotId });
-        if (!findReservation) throw new HttpException(409, "spot doesn't exist");
+        if (!findReservation) throw new HttpException(409, "La place n'existe pas.");
 
         return findReservation;
     }
 
     public async createReservation(reservationData: TReservation): Promise<TReservation> {
-        if (isEmpty(reservationData)) throw new HttpException(400, "reservationData is empty");
+        if (isEmpty(reservationData)) throw new HttpException(400, "Les données de la réservation sont vides.");
 
         const findReservation: TReservation | null = await this.reservations.findOne({ ...reservationData });
-        if (findReservation) throw new HttpException(409, `This reservation already exists`);
+        if (findReservation) throw new HttpException(409, `La reservation existe déjà.`);
 
 
         const createReservationData: TReservation = await this.reservations.create({ ...reservationData });
@@ -53,17 +53,17 @@ class ReservationService {
     }
 
     public async updateReservation(reservationId: string, reservationData: TReservation): Promise<TReservation> {
-        if (isEmpty(reservationData)) throw new HttpException(400, "userData is empty");
+        if (isEmpty(reservationData)) throw new HttpException(400, "Les données de la réservation sont vides.");
 
         const updateReservationById: TReservation | null = await this.reservations.findByIdAndUpdate(reservationId, { ...reservationData }, { new: true });
-        if (!updateReservationById) throw new HttpException(409, "User doesn't exist");
+        if (!updateReservationById) throw new HttpException(409, "La reservation n'existe pas.");
 
         return updateReservationById;
     }
 
     public async deleteReservation(reservationId: string): Promise<TReservation> {
         const deleteReservationById: TReservation | null = await this.reservations.findByIdAndDelete(reservationId);
-        if (!deleteReservationById) throw new HttpException(409, "User doesn't exist");
+        if (!deleteReservationById) throw new HttpException(409, "La reservation n'existe pas.");
 
         return deleteReservationById;
     }

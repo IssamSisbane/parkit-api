@@ -30,25 +30,6 @@ class AuthController {
             next(error);
         }
     };
-
-    // to Delete
-    public logOut = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            if (!req.user) {
-                throw new Error('Invalid token');
-            }
-
-            if (req.user) {
-                const userData: TLoginUserDto = req.user;
-                const logOutUserData: TLoginUserDto = await this.authService.logout(userData);
-
-                res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
-                res.status(200).json({ data: logOutUserData, message: 'logout' });
-            }
-        } catch (error) {
-            next(error);
-        }
-    };
 }
 
 export default AuthController;
