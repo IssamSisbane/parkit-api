@@ -7,7 +7,7 @@ export type TRegisterUserDto = {
 }
 
 export type TLoginUserDto = {
-    email: string;
+    username: string;
     password: string;
 }
 

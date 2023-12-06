@@ -13,11 +13,14 @@ class AuthService {
     public async register(userData: TRegisterUserDto): Promise<TLoginUserDto> {
         if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
 
-        const findUser: TLoginUserDto | null = await this.users.findOne({ email: userData.email });
-        if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
+        const foundUserEmail: TLoginUserDto | null = await this.users.findOne({ email: userData.email });
+        if (foundUserEmail) throw new HttpException(409, `This email '${userData.email}' already exists`);
+
+        const foundUserUsername: TLoginUserDto | null = await this.users.findOne({ username: userData.username });
+        if (foundUserUsername) throw new HttpException(409, `This username '${userData.username}' already exists`);
 
         const hashedPassword = await hash(userData.password, 10);
-        const createUserData: TLoginUserDto | null = await this.users.create({ ...userData, createdAt: new Date(), updatedAt: new Date, password: hashedPassword });
+        const createUserData: TLoginUserDto | null = await this.users.create({ ...userData, password: hashedPassword });
 
         return createUserData;
     }
@@ -25,24 +28,15 @@ class AuthService {
     public async login(userData: TLoginUserDto): Promise<TDataToken> {
         if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
 
-        const findUser: TUser | null = await this.users.findOne({ email: userData.email });
-        if (!findUser) throw new HttpException(409, `This email ${userData.email} was not found`);
+        const foundUser: TUser | null = await this.users.findOne({ username: userData.username });
+        if (!foundUser) throw new HttpException(409, `This username '${userData.username}' was not found`);
 
-        const isPasswordMatching: boolean = await compare(userData.password, findUser.password);
+        const isPasswordMatching: boolean = await compare(userData.password, foundUser.password);
         if (!isPasswordMatching) throw new HttpException(409, "Password is not matching");
 
-        const TDataToken = this.createToken(findUser);
+        const TDataToken = this.createToken(foundUser);
 
         return TDataToken;
-    }
-
-    public async logout(userData: TLoginUserDto): Promise<TLoginUserDto> {
-        if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
-
-        const findUser: TLoginUserDto | null = await this.users.findOne({ email: userData.email, password: userData.password });
-        if (!findUser) throw new HttpException(409, `This email ${userData.email} was not found`);
-
-        return findUser;
     }
 
     public createToken(user: TUser): TDataToken {
@@ -51,11 +45,6 @@ class AuthService {
         const expiresIn: number = 60 * 60;
 
         return { expiresIn, token: sign(TDataStoredInToken, secretKey, { expiresIn }) };
-    }
-
-    // to Delete
-    public createCookie(TDataToken: TDataToken): string {
-        return `Authorization=${TDataToken.token}; HttpOnly; Max-Age=${TDataToken.expiresIn};`;
     }
 }
 

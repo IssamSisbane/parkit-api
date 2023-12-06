@@ -7,6 +7,7 @@ type TUser = {
     lastname: string;
     email: string;
     password: string;
+    profilePicture: number;
 }
 
 const userSchema = new mongoose.Schema<TUser>({
@@ -29,7 +30,11 @@ const userSchema = new mongoose.Schema<TUser>({
     password: {
         type: String,
         required: true,
-    }
+    },
+    profilePicture: {
+        type: Number,
+        required: true,
+    },
 });
 
 const User = mongoose.model("User", userSchema, "users");
