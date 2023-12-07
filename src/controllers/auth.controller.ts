@@ -11,9 +11,10 @@ class AuthController {
     public register = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userData: TRegisterUserDto = req.body;
-            const { token } = await this.authService.register(userData);
+            const { accessToken, refreshToken } = await this.authService.register(userData);
 
-            res.status(201).json({ token });
+            res.cookie('jwt', refreshToken, { secure: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+            res.status(201).json({ accessToken });
         } catch (error) {
             next(error);
         }
@@ -22,9 +23,10 @@ class AuthController {
     public logIn = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userData: TRegisterUserDto = req.body;
-            const { token } = await this.authService.login(userData);
+            const { accessToken, refreshToken } = await this.authService.login(userData);
 
-            res.status(200).json({ token });
+            res.cookie('jwt', refreshToken, { secure: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+            res.status(200).json({ accessToken });
         } catch (error) {
             next(error);
         }
@@ -40,6 +42,20 @@ class AuthController {
             next(error);
         }
     };
+
+    public refresh = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const oldRefreshToken: string = req.cookies.jwt;
+            const { accessToken, refreshToken: refreshToken } = await this.authService.refresh(oldRefreshToken);
+
+            res.cookie('jwt', refreshToken, { secure: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+            res.status(200).json({ accessToken });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+
 }
 
 export default AuthController;

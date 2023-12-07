@@ -16,6 +16,7 @@ class AuthRoute implements Route {
         this.router.post(`${this.path}/register`, this.authController.register);
         this.router.post(`${this.path}/login`, this.authController.logIn);
         this.router.get(`${this.path}/me`, authMiddleware, this.authController.getUserInfos);
+        this.router.get(`${this.path}/refresh`, this.authController.refresh);
     }
 }
 

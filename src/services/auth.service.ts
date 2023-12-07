@@ -1,6 +1,6 @@
 import { hash, compare } from 'bcrypt';
-import { sign } from 'jsonwebtoken';
-import { JWT_SECRET } from '~/config/env.config';
+import { sign, verify, TokenExpiredError } from 'jsonwebtoken';
+import { ACCESS_JWT_SECRET, REFRESH_JWT_SECRET, ACCESS_EXPIRES_IN, REFRESH_EXPIRES_IN } from '~/config/env.config';
 import { TRegisterUserDto, TLoginUserDto, TUserDto } from '~/dtos/user.dto';
 import { HttpException } from '~/exceptions/HttpException';
 import { TDataStoredInToken, TDataToken } from '~/types/auth.type';
@@ -22,9 +22,10 @@ class AuthService {
         const hashedPassword = await hash(userData.password, 10);
         const createUserData: TUser | null = await this.users.create({ ...userData, password: hashedPassword, profilePicture: 0 });
 
-        const TDataToken = this.createToken(createUserData);
+        const accessToken = this.createToken(createUserData, ACCESS_EXPIRES_IN!, ACCESS_JWT_SECRET!);
+        const refreshToken = this.createToken(createUserData, REFRESH_EXPIRES_IN!, REFRESH_JWT_SECRET!);
 
-        return TDataToken;
+        return { accessToken, refreshToken };
     }
 
     public async login(userData: TLoginUserDto): Promise<TDataToken> {
@@ -36,17 +37,41 @@ class AuthService {
         const isPasswordMatching: boolean = await compare(userData.password, foundUser.password);
         if (!isPasswordMatching) throw new HttpException(409, "Le mot de passe est incorrect.");
 
-        const TDataToken = this.createToken(foundUser);
+        const accessToken = this.createToken(foundUser, ACCESS_EXPIRES_IN!, ACCESS_JWT_SECRET!);
+        const refreshToken = this.createToken(foundUser, REFRESH_EXPIRES_IN!, REFRESH_JWT_SECRET!);
 
-        return TDataToken;
+        return { accessToken, refreshToken };
     }
 
-    public createToken(user: TUser): TDataToken {
-        const TDataStoredInToken: TDataStoredInToken = { _id: user._id };
-        const secretKey: string = JWT_SECRET!;
-        const expiresIn: number = 60 * 60;
+    public async refresh(oldRefreshToken: string): Promise<TDataToken> {
+        if (isEmpty(oldRefreshToken)) throw new HttpException(400, "Le token est vide.");
 
-        return { expiresIn, token: sign(TDataStoredInToken, secretKey, { expiresIn }) };
+        try {
+            const decodedToken = (verify(oldRefreshToken, REFRESH_JWT_SECRET!)) as TDataStoredInToken;
+            const userId = decodedToken._id;
+
+            const foundUser: TUser | null = await this.users.findById(userId);
+            if (!foundUser) throw new HttpException(409, "L'utilisateur n'existe pas.");
+
+
+            const accessToken = this.createToken(foundUser, ACCESS_EXPIRES_IN!, ACCESS_JWT_SECRET!);
+            const refreshToken = this.createToken(foundUser, REFRESH_EXPIRES_IN!, REFRESH_JWT_SECRET!);
+
+            return { accessToken, refreshToken };
+
+        } catch (err) {
+            if (err instanceof TokenExpiredError) {
+                throw new HttpException(401, "Le token a expiré.");
+            } else {
+                throw new HttpException(401, "Erreur de vérification du token.");
+            }
+        }
+
+    }
+
+    public createToken(user: TUser, expiresIn: string, secretKey: string): string {
+        const TDataStoredInToken: TDataStoredInToken = { _id: user._id, username: user.username };
+        return sign(TDataStoredInToken, secretKey, { expiresIn: ACCESS_EXPIRES_IN });
     }
 }
 
