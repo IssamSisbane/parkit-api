@@ -1,7 +1,7 @@
 import { hash, compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { JWT_SECRET } from '~/config/env.config';
-import { TRegisterUserDto, TLoginUserDto } from '~/types/dtos/user.dto';
+import { TRegisterUserDto, TLoginUserDto, TUserDto } from '~/dtos/user.dto';
 import { HttpException } from '~/exceptions/HttpException';
 import { TDataStoredInToken, TDataToken } from '~/types/auth.type';
 import { User, TUser } from '~/models/user.model';
@@ -10,7 +10,7 @@ import { isEmpty } from '~/utils/util';
 class AuthService {
     public users = User;
 
-    public async register(userData: TRegisterUserDto): Promise<TLoginUserDto> {
+    public async register(userData: TRegisterUserDto): Promise<TDataToken> {
         if (isEmpty(userData)) throw new HttpException(400, "Les données de l'utilisateur fournies sont vides.");
 
         const foundUserEmail: TLoginUserDto | null = await this.users.findOne({ email: userData.email });
@@ -20,9 +20,11 @@ class AuthService {
         if (foundUserUsername) throw new HttpException(409, `Le pseudo '${userData.username}' est déjà utilisé.`);
 
         const hashedPassword = await hash(userData.password, 10);
-        const createUserData: TLoginUserDto | null = await this.users.create({ ...userData, password: hashedPassword });
+        const createUserData: TUser | null = await this.users.create({ ...userData, password: hashedPassword, profilePicture: 0 });
 
-        return createUserData;
+        const TDataToken = this.createToken(createUserData);
+
+        return TDataToken;
     }
 
     public async login(userData: TLoginUserDto): Promise<TDataToken> {

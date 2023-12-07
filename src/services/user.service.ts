@@ -1,8 +1,9 @@
 import { hash } from 'bcrypt';
-import { TRegisterUserDto, TUserDto } from '~/types/dtos/user.dto';
+import { TRegisterUserDto, TUserDto } from '~/dtos/user.dto';
 import { HttpException } from '~/exceptions/HttpException';
 import { User, TUser } from '~/models/user.model';
 import { isEmpty } from '~/utils/util';
+import { ObjectId } from 'mongoose';
 
 class UserService {
     public users = User;
@@ -15,17 +16,26 @@ class UserService {
     public async findUserByUsername(username: string): Promise<TUserDto> {
         if (isEmpty(username)) throw new HttpException(400, "Le nom de l'utilisateur est vide.");
 
-        const findUser: TUserDto | null = await this.users.findOne({ username: username });
-        if (!findUser) throw new HttpException(409, "L'utilisateur n'existe pas.");
+        const foundUser: TUserDto | null = await this.users.findOne({ username: username });
+        if (!foundUser) throw new HttpException(409, "L'utilisateur n'existe pas.");
 
-        return findUser;
+        return new TUserDto(foundUser.username, foundUser.email, foundUser.profilePicture);
+    }
+
+    public async findUserById(id: string): Promise<TUserDto> {
+        if (id == undefined || id == '') throw new HttpException(400, "L'id de l'utilisateur est vide.");
+
+        const foundUser: TUserDto | null = await this.users.findById(id);
+        if (!foundUser) throw new HttpException(409, "L'utilisateur n'existe pas.");
+
+        return new TUserDto(foundUser.username, foundUser.email, foundUser.profilePicture);
     }
 
     public async createUser(userData: TRegisterUserDto): Promise<TUser> {
         if (isEmpty(userData)) throw new HttpException(400, "Les données de l'utilisateur sont vides.");
 
-        const findUser: TUser | null = await this.users.findOne({ email: userData.email });
-        if (findUser) throw new HttpException(409, `L'email '${userData.email}' n'existe pas.`);
+        const foundUser: TUser | null = await this.users.findOne({ email: userData.email });
+        if (foundUser) throw new HttpException(409, `L'email '${userData.email}' n'existe pas.`);
 
         const hashedPassword = await hash(userData.password, 10);
         const createUserData: TUser = await this.users.create({ ...userData, createdAt: new Date(), updatedAt: new Date(), password: hashedPassword });
@@ -37,8 +47,8 @@ class UserService {
         if (isEmpty(userData)) throw new HttpException(400, "Les données de l'utilisateur sont vides.");
 
         if (userData.email) {
-            const findUser: TUser | null = await this.users.findOne({ email: userData.email });
-            if (findUser && findUser.username != username) throw new HttpException(409, `L'email '${userData.email}' n'existe pas.`);
+            const foundUser: TUser | null = await this.users.findOne({ email: userData.email });
+            if (foundUser && foundUser.username != username) throw new HttpException(409, `L'email '${userData.email}' n'existe pas.`);
         }
 
         if (userData.password) {

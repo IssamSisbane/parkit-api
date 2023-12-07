@@ -3,8 +3,6 @@ import mongoose from "mongoose";
 type TUser = {
     _id: string;
     username: string;
-    firstname: string;
-    lastname: string;
     email: string;
     password: string;
     profilePicture: number;
@@ -12,14 +10,6 @@ type TUser = {
 
 const userSchema = new mongoose.Schema<TUser>({
     username: {
-        type: String,
-        required: true,
-    },
-    firstname: {
-        type: String,
-        required: true,
-    },
-    lastname: {
         type: String,
         required: true,
     },

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { TRegisterUserDto, TLoginUserDto, TUserDto } from '~/types/dtos/user.dto';
+import { TRegisterUserDto, TLoginUserDto, TUserDto } from '~/dtos/user.dto';
 import userService from '~/services/user.service';
+import { ObjectId } from 'mongoose';
 
 class UsersController {
     public userService = new userService();

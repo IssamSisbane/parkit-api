@@ -14,10 +14,10 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction) =
             const secretKey: any = JWT_SECRET;
             const verificationResponse = (await verify(Authorization, secretKey)) as TDataStoredInToken;
             const userId = verificationResponse._id;
-            const findUser = await User.findById(userId);
+            const foundUser = await User.findById(userId);
 
-            if (findUser) {
-                req.user = findUser;
+            if (foundUser) {
+                req.user = foundUser;
                 next();
             } else {
                 next(new HttpException(401, 'Token d\'authentification invalide.'));
