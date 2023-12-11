@@ -7,18 +7,39 @@ enum SpotState {
 }
 
 type TSpot = {
-    id: string;
+    _id: mongoose.Types.ObjectId;
+    name: string;
     state: SpotState;
+    column: number;
+    row: number;
+    parking: mongoose.Types.ObjectId;
 }
 
 const spotSchema = new mongoose.Schema<TSpot>({
-    id: {
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+    },
+    name: {
         type: String,
         required: true,
     },
     state: {
         type: String,
         enum: ["free", "occupied", "reserved"],
+        required: true,
+    },
+    column: {
+        type: Number,
+        required: true,
+    },
+    row: {
+        type: Number,
+        required: true,
+    },
+    parking: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Parking',
         required: true,
     },
 });

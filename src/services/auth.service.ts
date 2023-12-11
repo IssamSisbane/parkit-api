@@ -6,6 +6,7 @@ import { HttpException } from '~/exceptions/HttpException';
 import { TDataStoredInToken, TDataToken } from '~/types/auth.type';
 import { User, TUser } from '~/models/user.model';
 import { isEmpty } from '~/utils/util';
+import { Types } from 'mongoose';
 
 class AuthService {
     public users = User;
@@ -20,7 +21,7 @@ class AuthService {
         if (foundUserUsername) throw new HttpException(409, `Le pseudo '${userData.username}' est déjà utilisé.`);
 
         const hashedPassword = await hash(userData.password, 10);
-        const createUserData: TUser | null = await this.users.create({ ...userData, password: hashedPassword, profilePicture: 0 });
+        const createUserData: TUser | null = await this.users.create({ _id: new Types.ObjectId(), ...userData, password: hashedPassword, profilePicture: 0 });
 
         const accessToken = this.createToken(createUserData, ACCESS_EXPIRES_IN!, ACCESS_JWT_SECRET!);
         const refreshToken = this.createToken(createUserData, REFRESH_EXPIRES_IN!, REFRESH_JWT_SECRET!);
@@ -70,8 +71,8 @@ class AuthService {
     }
 
     public createToken(user: TUser, expiresIn: string, secretKey: string): string {
-        const TDataStoredInToken: TDataStoredInToken = { _id: user._id, username: user.username };
-        return sign(TDataStoredInToken, secretKey, { expiresIn: ACCESS_EXPIRES_IN });
+        const TDataStoredInToken: TDataStoredInToken = { _id: user._id.toString(), username: user.username };
+        return sign(TDataStoredInToken, secretKey, { expiresIn });
     }
 }
 

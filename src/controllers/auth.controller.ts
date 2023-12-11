@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
+import { Types } from 'mongoose';
 import { TRegisterUserDto, TUserDto } from '~/dtos/user.dto';
-import { TLoginUserDto } from '~/dtos/user.dto';
 import AuthService from '~/services/auth.service';
 import UserService from '~/services/user.service';
 
@@ -34,8 +34,8 @@ class AuthController {
 
     public getUserInfos = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const id: string = req.user!._id;
-            const findOneUserData: TUserDto = await this.usersService.findUserById(id);
+            const _id: Types.ObjectId = req.user!._id;
+            const findOneUserData: TUserDto = await this.usersService.findUserById(_id.toString());
 
             res.status(200).json({ data: findOneUserData, message: 'me' });
         } catch (error) {

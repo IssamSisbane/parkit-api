@@ -1,6 +1,7 @@
 import mongoose, { Date } from "mongoose";
 
 type TReservation = {
+    _id: mongoose.Types.ObjectId;
     user: string;
     spot: string;
     createdAt: Date;
@@ -9,6 +10,10 @@ type TReservation = {
 }
 
 const reservationSchema = new mongoose.Schema<TReservation>({
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+    },
     user: {
         type: String,
         required: true,

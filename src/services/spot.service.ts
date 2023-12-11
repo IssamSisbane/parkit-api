@@ -1,19 +1,28 @@
 import { HttpException } from '~/exceptions/HttpException';
+import { Parking, TParking } from '~/models/parking.model';
 import { Spot, TSpot } from '~/models/spot.model';
 import { isEmpty } from '~/utils/util';
+import { Types } from 'mongoose';
 
 class SpotService {
     public spots = Spot;
+    public parkings = Parking;
 
     public async findAllSpots(): Promise<TSpot[]> {
-        const spots: TSpot[] = await this.spots.find();
+        const spots: TSpot[] = await this.spots.find().populate('parking');
         return spots;
     }
 
-    public async findSpotById(id: string): Promise<TSpot> {
-        if (isEmpty(id)) throw new HttpException(400, "L'id de la place est vide.");
+    public async findAllSpotsFromParking(parking: string, state: string): Promise<TSpot[]> {
+        const request = state ? { parking: parking, state: state } : { parking: parking };
+        const spots: TSpot[] = await this.spots.find(request).populate('parking');
+        return spots;
+    }
 
-        const foundSpot: TSpot | null = await this.spots.findOne({ id: id });
+    public async findSpotById(_id: string): Promise<TSpot> {
+        if (isEmpty(_id)) throw new HttpException(400, "L'id de la place est vide.");
+
+        const foundSpot: TSpot | null = await this.spots.findOne({ _id });
         if (!foundSpot) throw new HttpException(409, "La place n'existe pas.");
 
         return foundSpot;
@@ -22,30 +31,40 @@ class SpotService {
     public async createSpot(spotData: TSpot): Promise<TSpot> {
         if (isEmpty(spotData)) throw new HttpException(400, "Les données de la place sont vides.");
 
-        const foundSpot: TSpot | null = await this.spots.findOne({ id: spotData.id });
-        if (foundSpot) throw new HttpException(409, `L'id '${spotData.id}' existe déjà.`);
+        const foundSpot: TSpot | null = await this.spots.findOne({ name: spotData.name });
+        if (foundSpot) throw new HttpException(409, `La place avec le nom '${spotData.name}' existe déjà.`);
+
+        const parking: TParking | null = await this.parkings.findOne({ _id: spotData.parking });
+        if (!parking) throw new HttpException(409, "Le parking n'existe pas.");
+
+        spotData._id = new Types.ObjectId();
 
         const createSpotData: TSpot = await this.spots.create({ ...spotData });
 
         return createSpotData;
     }
 
-    public async updateSpot(id: string, spotData: TSpot): Promise<TSpot> {
+    public async updateSpot(_id: string, spotData: TSpot): Promise<TSpot> {
         if (isEmpty(spotData)) throw new HttpException(400, "Les données de la place sont vides.");
 
-        if (spotData.id) {
-            const foundSpot: TSpot | null = await this.spots.findOne({ id: spotData.id });
-            if (foundSpot && foundSpot.id != id) throw new HttpException(409, `L'id '${spotData.id}' existe déjà.`);
+        if (spotData.name) {
+            const foundSpot: TSpot | null = await this.spots.findOne({ name: spotData.name });
+            if (foundSpot && foundSpot._id.toString() != _id && foundSpot.name != spotData.name) throw new HttpException(409, `La place avec le nom '${spotData.name}' existe déjà.`);
         }
 
-        const updateSpotById: TSpot | null = await this.spots.findOneAndUpdate({ id }, { ...spotData }, { new: true, runValidators: true });
+        if (spotData.parking) {
+            const parking: TParking | null = await this.parkings.findOne({ _id: spotData.parking });
+            if (!parking) throw new HttpException(409, "Le parking n'existe pas.");
+        }
+
+        const updateSpotById: TSpot | null = await this.spots.findOneAndUpdate({ _id }, { ...spotData }, { new: true, runValidators: true }).populate('parking');
         if (!updateSpotById) throw new HttpException(409, "La place n'existe pas.");
 
         return updateSpotById;
     }
 
-    public async deleteSpot(id: string): Promise<TSpot> {
-        const deleteSpotById: TSpot | null = await this.spots.findOneAndDelete({ id });
+    public async deleteSpot(_id: string): Promise<TSpot> {
+        const deleteSpotById: TSpot | null = await this.spots.findOneAndDelete({ _id });
         if (!deleteSpotById) throw new HttpException(409, "La place n'existe pas.");
 
         return deleteSpotById;

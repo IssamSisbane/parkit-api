@@ -15,10 +15,22 @@ class SpotsController {
         }
     };
 
+    public getSpotsFromParking = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const parking: string = req.params.parking;
+            const state: string = req.body.state;
+            const findAllSpotsData: TSpot[] = await this.spotService.findAllSpotsFromParking(parking, state);
+
+            res.status(200).json({ data: findAllSpotsData, message: 'findAll' });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     public getSpotBynumber = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const id: string = req.params.id;
-            const findOneSpotData: TSpot = await this.spotService.findSpotById(id);
+            const _id: string = req.params._id;
+            const findOneSpotData: TSpot = await this.spotService.findSpotById(_id);
 
             res.status(200).json({ data: findOneSpotData, message: 'findOne' });
         } catch (error) {
@@ -39,7 +51,7 @@ class SpotsController {
 
     public updateSpot = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const spotId: string = req.params.id;
+            const spotId: string = req.params._id;
             const spotData: TSpot = req.body;
             const updateSpotData: TSpot = await this.spotService.updateSpot(spotId, spotData);
 
@@ -51,7 +63,7 @@ class SpotsController {
 
     public deleteSpot = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const spotId: string = req.params.id;
+            const spotId: string = req.params._id;
             const deleteSpotData: TSpot = await this.spotService.deleteSpot(spotId);
 
             res.status(200).json({ data: deleteSpotData, message: 'deleted' });

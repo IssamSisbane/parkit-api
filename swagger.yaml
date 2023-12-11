@@ -57,7 +57,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/definitions/registerUserDto"
+              $ref: "#/definitions/User"
       responses:
         201:
           description: "Created"
@@ -65,6 +65,36 @@ paths:
           description: "Bad Request"
         409:
           description: "Conflict"
+        500:
+          description: "Server Error"
+
+  # [GET] auth/me
+  /auth/me:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Auth
+      summary: Find Logged user infos
+      responses:
+        200:
+          description: "OK"
+        500:
+          description: "Server Error"
+
+  # [GET] auth/refresh
+  /auth/refresh:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Auth
+      summary: Refresh access token
+      responses:
+        200:
+          description: "OK"
+        401:
+          description: "Unauthorized"
         500:
           description: "Server Error"
 
@@ -104,7 +134,7 @@ paths:
         500:
           description: "Server Error"
 
-    # [PUT] users/id
+    # [PUT] users/_id
     put:
       security:
         - bearerAuth: []
@@ -120,7 +150,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/definitions/users"
+              $ref: "#/definitions/User"
       responses:
         200:
           description: "OK"
@@ -131,7 +161,7 @@ paths:
         500:
           description: "Server Error"
 
-    # [DELETE] users/id
+    # [DELETE] users/_id
     delete:
       security:
         - bearerAuth: []
@@ -189,18 +219,18 @@ paths:
         500:
           description: "Server Error"
 
-  # [GET] spots/id
-  /spots/{id}:
+  # [GET] spots/_id
+  /spots/{_id}:
     get:
       security:
         - bearerAuth: []
       tags:
         - Spots
-      summary: Find Spot By Id
+      summary: Find Spot By _Id
       parameters:
-        - name: id
+        - name: _id
           in: path
-          description: Spot Id
+          description: Spot _Id
           required: true
       responses:
         200:
@@ -210,23 +240,23 @@ paths:
         500:
           description: "Server Error"
 
-    # [PUT] spots/id
+    # [PUT] spots/_id
     put:
       security:
         - bearerAuth: []
       tags:
         - Spots
-      summary: Update Spot By Id
+      summary: Update Spot By _Id
       parameters:
-        - name: id
+        - name: _id
           in: path
-          description: spot Id
+          description: spot _Id
           required: true
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/definitions/spots"
+              $ref: "#/definitions/Spot"
       responses:
         200:
           description: "OK"
@@ -237,23 +267,54 @@ paths:
         500:
           description: "Server Error"
 
-    # [DELETE] spots/id
+    # [DELETE] spots/_id
     delete:
       security:
         - bearerAuth: []
       tags:
         - Spots
-      summary: Delete Spot By Id
+      summary: Delete Spot By _Id
       parameters:
-        - name: id
+        - name: _id
           in: path
-          description: spot Id
+          description: spot _Id
           required: true
       responses:
         200:
           description: "OK"
         409:
           description: "Conflict"
+        500:
+          description: "Server Error"
+
+  # [GET] spots/parking
+  /spots/parking/{parkingId}:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Spots
+      summary: Find All Spots
+      parameters:
+        - name: parkingId
+          in: path
+          description: Parking _Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                state:
+                  type: string
+              description: Spot state
+      responses:
+        200:
+          description: "OK"
         500:
           description: "Server Error"
 
@@ -295,18 +356,18 @@ paths:
         500:
           description: "Server Error"
 
-  # [GET] reservations/id
-  /reservations/{id}:
+  # [GET] reservations/_id
+  /reservations/{_id}:
     get:
       security:
         - bearerAuth: []
       tags:
         - Reservations
-      summary: Find Reservation By Id
+      summary: Find Reservation By _Id
       parameters:
-        - name: id
+        - name: _id
           in: path
-          description: Reservation Id
+          description: Reservation _Id
           required: true
       responses:
         200:
@@ -315,23 +376,23 @@ paths:
           description: "Conflict"
         500:
           description: "Server Error"
-    # [PUT] reservations/id
+    # [PUT] reservations/_id
     put:
       security:
         - bearerAuth: []
       tags:
         - Reservations
-      summary: Update Reservation By Id
+      summary: Update Reservation By _Id
       parameters:
-        - name: id
+        - name: _id
           in: path
-          description: reservation Id
+          description: reservation _Id
           required: true
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/definitions/reservations"
+              $ref: "#/definitions/Reservation"
       responses:
         200:
           description: "OK"
@@ -341,17 +402,17 @@ paths:
           description: "Conflict"
         500:
           description: "Server Error"
-    # [DELETE] reservations/id
+    # [DELETE] reservations/_id
     delete:
       security:
         - bearerAuth: []
       tags:
         - Reservations
-      summary: Delete Reservation By Id
+      summary: Delete Reservation By _Id
       parameters:
-        - name: id
+        - name: _id
           in: path
-          description: reservation Id
+          description: reservation _Id
           required: true
       responses:
         200:
@@ -401,18 +462,129 @@ paths:
         500:
           description: "Server Error"
 
+  ## USERS
+  # [GET] parkings
+  /parkings:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Parkings
+      summary: Find All Parkings
+      responses:
+        200:
+          description: "OK"
+        500:
+          description: "Server Error"
+    # [POST] parkings
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Parkings
+      summary: Add Parking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Parking"
+      responses:
+        201:
+          description: "Created"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  # [GET] parkings/_id
+  /parkings/{_id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Parkings
+      summary: Find Parking By _Id
+      parameters:
+        - name: _id
+          in: path
+          description: Parking _Id
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+    # [PUT] parkings/_id
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Parkings
+      summary: Update Parking By _Id
+      parameters:
+        - name: _id
+          in: path
+          description: parking _Id
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Parking"
+      responses:
+        200:
+          description: "OK"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+    # [DELETE] parkings/_id
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Parkings
+      summary: Delete Parking By _Id
+      parameters:
+        - name: _id
+          in: path
+          description: parking _Id
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
 # definitions
 definitions:
   ## Users
   User:
     type: object
     required:
+      - username
       - email
+      - profilePicture
       - password
     properties:
+      username:
+        type: string
+        description: user username
       email:
         type: string
         description: user Email
+      profilePicture:
+        type: number
+        description: user profile picture
       password:
         type: string
         description: user Password
@@ -434,8 +606,6 @@ definitions:
       - username
       - email
       - password
-      - firstName
-      - lastName
     properties:
       username:
         type: string
@@ -446,25 +616,31 @@ definitions:
       password:
         type: string
         description: user Password
-      firstName:
-        type: string
-        description: user First Name
-      lastName:
-        type: string
-        description: user Last Name
   ## Spots
   Spot:
     type: object
     required:
-      - id
+      - name
       - state
+      - row
+      - column
+      - parking
     properties:
-      id:
+      name:
         type: string
-        description: spot id
+        description: spot _id
       state:
         type: string
         description: spot state
+      row:
+        type: number
+        description: spot row
+      column:
+        type: number
+        description: spot column
+      parking:
+        type: string
+        description: parking ref
   ## Reservations
   Reservation:
     type: object
@@ -493,6 +669,31 @@ definitions:
         type: string
         format: date-time
         description: reservation end date
+  ## Parkings
+  Parking:
+    type: object
+    required:
+      - _id
+      - name
+      - address
+      - columnNumber
+      - rowNumber
+    properties:
+      _id:
+        type: string
+        description: parking _id
+      name:
+        type: string
+        description: parking name
+      address:
+        type: string
+        description: parking address
+      columnNumber:
+        type: number
+        description: parking column number
+      rowNumber:
+        type: number
+        description: parking row number
 schemes:
   - https
   - http

@@ -22,7 +22,7 @@ class ReservationsController {
 
     public getReservationById = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const reservationId: string = req.params.id;
+            const reservationId: string = req.params._id;
             const findOneReservationData: TReservation = await this.reservationService.findReservationById(reservationId);
 
             res.status(200).json({ data: findOneReservationData, message: 'findOneById' });
@@ -70,7 +70,7 @@ class ReservationsController {
 
     public updateReservation = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const reservationId: string = req.params.id;
+            const reservationId: string = req.params._id;
             const reservationData: TReservation = req.body;
 
             if (reservationData.user) await this.userService.findUserByUsername(reservationData.user);
@@ -86,7 +86,7 @@ class ReservationsController {
 
     public deleteReservation = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const reservationId: string = req.params.id;
+            const reservationId: string = req.params._id;
             const deleteReservationData: TReservation = await this.reservationService.deleteReservation(reservationId);
 
             res.status(200).json({ data: deleteReservationData, message: 'deleted' });

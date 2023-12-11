@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { verify } from 'jsonwebtoken';
+import { TokenExpiredError, verify } from 'jsonwebtoken';
 import { ACCESS_JWT_SECRET } from '~/config/env.config';
 import { HttpException } from '~/exceptions/HttpException';
 import { TDataStoredInToken } from '~/types/auth.type';
@@ -26,7 +26,11 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction) =
             next(new HttpException(404, 'Token d\'authentification manquant.'));
         }
     } catch (error) {
-        next(new HttpException(401, 'Token d\'authentification invalide.'));
+        if (error instanceof TokenExpiredError) {
+            next(new HttpException(401, "Le token a expiré."));
+        } else {
+            next(new HttpException(401, 'Token d\'authentification invalide.'));
+        }
     }
 };
 

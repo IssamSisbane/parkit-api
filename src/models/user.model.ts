@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 type TUser = {
-    _id: string;
+    _id: mongoose.Types.ObjectId;
     username: string;
     email: string;
     password: string;
@@ -9,6 +9,10 @@ type TUser = {
 }
 
 const userSchema = new mongoose.Schema<TUser>({
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+    },
     username: {
         type: String,
         required: true,
