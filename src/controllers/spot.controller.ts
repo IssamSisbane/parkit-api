@@ -8,7 +8,6 @@ class SpotsController {
     public getSpots = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const findAllSpotsData: TSpot[] = await this.spotService.findAllSpots();
-
             res.status(200).json({ data: findAllSpotsData, message: 'findAll' });
         } catch (error) {
             next(error);

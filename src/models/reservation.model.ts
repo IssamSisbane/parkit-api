@@ -3,7 +3,7 @@ import mongoose, { Date } from "mongoose";
 type TReservation = {
     _id: mongoose.Types.ObjectId;
     user: string;
-    spot: string;
+    spot: mongoose.Schema.Types.ObjectId;
     createdAt: Date;
     startedAt: Date;
     endedAt: Date;
@@ -19,7 +19,8 @@ const reservationSchema = new mongoose.Schema<TReservation>({
         required: true,
     },
     spot: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Spot',
         required: true,
     },
     createdAt: {

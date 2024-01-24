@@ -31,8 +31,8 @@ class SpotService {
     public async createSpot(spotData: TSpot): Promise<TSpot> {
         if (isEmpty(spotData)) throw new HttpException(400, "Les données de la place sont vides.");
 
-        const foundSpot: TSpot | null = await this.spots.findOne({ name: spotData.name });
-        if (foundSpot) throw new HttpException(409, `La place avec le nom '${spotData.name}' existe déjà.`);
+        const foundSpot: TSpot | null = await this.spots.findOne({ name: spotData.name, parking: spotData.parking });
+        if (foundSpot) throw new HttpException(409, `La place avec le nom '${spotData.name}' existe déjà pour ce parking.`);
 
         const parking: TParking | null = await this.parkings.findOne({ _id: spotData.parking });
         if (!parking) throw new HttpException(409, "Le parking n'existe pas.");

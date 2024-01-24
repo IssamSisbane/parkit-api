@@ -25,22 +25,31 @@ class ReservationService {
         return foundReservation;
     }
 
-    public async findReservationByUser(username: string): Promise<TReservation> {
+    public async findLastReservationByUser(username: string): Promise<TReservation> {
         if (isEmpty(username)) throw new HttpException(400, "Le nom d'utilisateur est vide.");
 
-        const foundReservation: TReservation | null = await this.reservations.findOne({ user: username });
-        if (!foundReservation) throw new HttpException(409, "L'utilisateur n'existe pas.");
+        const foundReservation: TReservation | null = await this.reservations.findOne({ user: username }).sort({ startedAt: -1 }).populate('spot');
+        if (!foundReservation) throw new HttpException(409, "Il n'y a aucune reservation pour cette utilisateur.");
 
         return foundReservation;
     }
 
-    public async findReservationBySpot(spotId: string): Promise<TReservation> {
+    public async findReservationsByUser(username: string): Promise<TReservation[]> {
+        if (isEmpty(username)) throw new HttpException(400, "Le nom d'utilisateur est vide.");
+
+        const foundReservations: TReservation[] | null = await this.reservations.find({ user: username }).populate('spot');
+        if (!foundReservations) throw new HttpException(409, "Il n'y a aucune reservation pour cette utilisateur.");
+
+        return foundReservations;
+    }
+
+    public async findReservationsBySpot(spotId: string): Promise<TReservation[]> {
         if (isEmpty(spotId)) throw new HttpException(400, "L'id de la place est vide.");
 
-        const foundReservation: TReservation | null = await this.reservations.findOne({ spot: spotId });
-        if (!foundReservation) throw new HttpException(409, "La place n'existe pas.");
+        const foundReservations: TReservation[] | null = await this.reservations.find({ spot: spotId });
+        if (!foundReservations) throw new HttpException(409, "La place n'existe pas.");
 
-        return foundReservation;
+        return foundReservations;
     }
 
     public async createReservation(reservationData: TReservation): Promise<TReservation> {

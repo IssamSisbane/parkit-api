@@ -442,6 +442,26 @@ paths:
         500:
           description: "Server Error"
 
+  /reservations/getLastByUser/{username}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Reservations
+      summary: Find Reservation By username
+      parameters:
+        - name: username
+          in: path
+          description: user's username
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
   /reservations/getBySpot/{spotId}:
     get:
       security:
