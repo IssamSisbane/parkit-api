@@ -74,6 +74,7 @@ class ReservationsController {
 
             const createReservationData: TReservation = await this.reservationService.createReservation(reservationData);
 
+
             res.status(201).json({ data: createReservationData, message: 'created' });
         } catch (error) {
             next(error);

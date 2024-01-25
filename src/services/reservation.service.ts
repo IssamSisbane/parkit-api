@@ -4,12 +4,19 @@ import { Reservation, TReservation } from '~/models/reservation.model';
 import { User, TUser } from '~/models/user.model';
 import { isEmpty } from '~/utils/util';
 import { Types } from 'mongoose';
+import MQTTHandler from '~/handlers/mqtt.handler';
 
 
 class ReservationService {
     public reservations = Reservation;
     public users = User;
     public spots = Spot;
+    public mqttHandler: MQTTHandler;
+
+    public constructor() {
+        this.mqttHandler = new MQTTHandler();
+    }
+
 
     public async findAllReservations(): Promise<TReservation[]> {
         const reservations: TReservation[] = await this.reservations.find();
@@ -65,8 +72,10 @@ class ReservationService {
         if (!spot) throw new HttpException(409, "La place n'existe pas.");
 
         reservationData._id = new Types.ObjectId();
-
         const createReservationData: TReservation = await this.reservations.create({ ...reservationData });
+        await this.spots.findByIdAndUpdate(reservationData.spot, { state: 'reserved' }, { new: true });
+
+        this.mqttHandler.publish('parking/' + spot.parking + '/spot/' + spot._id + '/reserved/start', JSON.stringify({ spot: spot.name, state: 'reserved', endedAt: createReservationData.endedAt }));
 
         return createReservationData;
     }
@@ -89,6 +98,12 @@ class ReservationService {
     public async deleteReservation(reservationId: string): Promise<TReservation> {
         const deleteReservationById: TReservation | null = await this.reservations.findByIdAndDelete(reservationId);
         if (!deleteReservationById) throw new HttpException(409, "La reservation n'existe pas.");
+
+        await this.spots.findByIdAndUpdate(deleteReservationById.spot, { state: 'free' }, { new: true });
+
+        const spot: TSpot | null = await this.spots.findById(deleteReservationById.spot);
+
+        this.mqttHandler.publish('parking/' + spot!.parking + '/spot/' + spot!._id + '/reserved/end', JSON.stringify({ spot: spot!.name, state: 'reserved' }));
 
         return deleteReservationById;
     }

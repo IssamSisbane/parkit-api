@@ -6,6 +6,7 @@ type TUser = {
     email: string;
     password: string;
     profilePicture: number;
+    nfcId: string;
 }
 
 const userSchema = new mongoose.Schema<TUser>({
@@ -28,6 +29,10 @@ const userSchema = new mongoose.Schema<TUser>({
     profilePicture: {
         type: Number,
         required: true,
+    },
+    nfcId: {
+        type: String,
+        required: false,
     },
 });
 
