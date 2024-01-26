@@ -26,8 +26,8 @@ class StatsService {
         return createStatsData;
     }
 
-    public async getLastDayStats(parkingId: string): Promise<TStats[]> {
-        const stats: TStats[] = await this.stats.find({ parkingId: parkingId, timestamp: { $gte: new Date(new Date().getTime() - 24 * 60 * 60 * 1000) } });
+    public async findStatsBetweenDates(parkingId: string, t1: Date, t2: Date): Promise<TStats[]> {
+        const stats: TStats[] = await this.stats.find({ parkingId: parkingId, timestamp: { $gte: t1, $lte: t2 } });
         return stats;
     }
 }

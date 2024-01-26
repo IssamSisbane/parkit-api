@@ -18,11 +18,6 @@ class MQTTHandler {
     private statsService: StatsService;
 
     constructor() {
-        // on initialise les services dont on a besoin
-        this.parkingService = new ParkingService();
-        this.reservationService = new ReservationService();
-        this.spotService = new SpotService();
-
         // on initialise le client MQTT
         const options = {
             host: MQTT_HOST,
@@ -35,6 +30,12 @@ class MQTTHandler {
     }
 
     public async configure(): Promise<void> {
+        // on initialise les services dont on a besoin
+        this.parkingService = new ParkingService();
+        this.reservationService = new ReservationService();
+        this.spotService = new SpotService();
+        this.statsService = new StatsService();
+
         // setup the callbacks
         this.client.on('connect', function () {
             console.log('MQTT Client Connected');
@@ -47,8 +48,8 @@ class MQTTHandler {
 
         const parkings = await this.parkingService.findAllParking();
         for (const parking of parkings) {
-            this.subscribe(`parking/${parking._id}/spot/+/free`);
-            this.subscribe(`parking/${parking._id}/spot/+/occupied`);
+            this.subscribe(`parking/${parking._id}/spot/free`);
+            this.subscribe(`parking/${parking._id}/spot/occupied`);
             this.subscribe(`parking/${parking._id}/ask/spots/getAll`);
             this.subscribe(`parking/${parking._id}/ask/nfc/verify`);
             this.subscribe(`parking/${parking._id}/gate/entry`);
@@ -57,24 +58,31 @@ class MQTTHandler {
 
         this.client.on('message', async (topic, message) => {
 
-            const spotFreeMatch = topic.match(/^parking\/(.+)\/spot\/(.+)\/free$/);
-            const spotOccupiedMatch = topic.match(/^parking\/(.+)\/spot\/(.+)\/occupied$/);
+            const spotFreeMatch = topic.match(/^parking\/(.+)\/spot\/free$/);
+            const spotOccupiedMatch = topic.match(/^parking\/(.+)\/spot\/occupied$/);
             const spotsGetAllMatch = topic.match(/^parking\/(.+)\/ask\/spots\/getAll$/);
             const nfcVerifyMatch = topic.match(/^parking\/(.+)\/ask\/nfc\/verify$/);
             const gateEntryMatch = topic.match(/^parking\/(.+)\/gate\/entry$/);
             const gateExitMatch = topic.match(/^parking\/(.+)\/gate\/exit$/);
 
             if (spotFreeMatch) {
-                const parkingId = spotFreeMatch[1];
-                const spotId = spotFreeMatch[2];    // if id and not place name
-                await this.spotService.spots.findByIdAndUpdate(spotId, { state: 'free' });
-                this.statsService.createStats({ parkingId: parkingId, type: StatsType.free, timestamp: new Date() });
-                // Handle the case where the spot becomes free
+                const parkingId = spotFreeMatch[1];   // if id and not place name
+                const spotName = message;
+                const spot = await this.spotService.spots.findOne({ parking: parkingId, name: spotName });
+                console.log("free");
+                await this.spotService.spots.findByIdAndUpdate(spot?.id, { state: 'free' });
+                this.statsService.createStats({ parkingId: parkingId, type: StatsType.free, timestamp: new Date() });                // Handle the case where the spot becomes free
+
             } else if (spotOccupiedMatch) {
                 const parkingId = spotOccupiedMatch[1];
-                const spotId = spotOccupiedMatch[2];
+                const spotName = message;
+                const spot = await this.spotService.spots.findOne({ parking: parkingId, name: spotName });
+                if (spot!.state == 'reserved') {
+                    const reservations = await this.reservationService.findReservationsBySpot(spot!.id);
+                    await this.reservationService.deleteReservation(reservations[0]._id.toString());
+                }
                 console.log("occupied");
-                await this.spotService.spots.findByIdAndUpdate(spotId, { state: 'occupied' });
+                await this.spotService.spots.findByIdAndUpdate(spot?.id, { state: 'occupied' });
                 this.statsService.createStats({ parkingId: parkingId, type: StatsType.occupied, timestamp: new Date() });
                 // Handle the case where the spot becomes occupied
             } else if (spotsGetAllMatch) {
@@ -84,6 +92,7 @@ class MQTTHandler {
                 this.publish(`parking/${parkingId}/ans/spots/getAll`, JSON.stringify(spots));
                 // Handle the case where all spots are requested
             } else if (nfcVerifyMatch) {
+                // Handle the case where NFC verification is requested
                 const parkingId = nfcVerifyMatch[1];
                 console.log("verify");
                 const nfcId = JSON.parse(message.toString()).nfcId;
@@ -92,8 +101,6 @@ class MQTTHandler {
                 if (user) {
                     this.publish(`parking/${parkingId}/ans/nfc/verify`, JSON.stringify({ verified: true, user: user.username }));
                 }
-
-                // Handle the case where NFC verification is requested
             } else if (gateEntryMatch) {
                 const parkingId = gateEntryMatch[1];
                 console.log("entry");

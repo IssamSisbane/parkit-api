@@ -5,12 +5,14 @@ import { User, TUser } from '~/models/user.model';
 import { isEmpty } from '~/utils/util';
 import { Types } from 'mongoose';
 import MQTTHandler from '~/handlers/mqtt.handler';
+import { StatsType, Stats } from '~/models/stats.model';
 
 
 class ReservationService {
     public reservations = Reservation;
     public users = User;
     public spots = Spot;
+    public stats = Stats;
     public mqttHandler: MQTTHandler;
 
     public constructor() {
@@ -75,7 +77,10 @@ class ReservationService {
         const createReservationData: TReservation = await this.reservations.create({ ...reservationData });
         await this.spots.findByIdAndUpdate(reservationData.spot, { state: 'reserved' }, { new: true });
 
-        this.mqttHandler.publish('parking/' + spot.parking + '/spot/' + spot._id + '/reserved/start', JSON.stringify({ spot: spot.name, state: 'reserved', endedAt: createReservationData.endedAt }));
+        this.mqttHandler.publish('parking/' + spot.parking + '/reservation/started', spot.name);
+        console.log('publish reservation started');
+        this.stats.create({ parkingId: spot.parking, type: StatsType.reserved, timestamp: new Date() });
+
 
         return createReservationData;
     }
@@ -103,7 +108,8 @@ class ReservationService {
 
         const spot: TSpot | null = await this.spots.findById(deleteReservationById.spot);
 
-        this.mqttHandler.publish('parking/' + spot!.parking + '/spot/' + spot!._id + '/reserved/end', JSON.stringify({ spot: spot!.name, state: 'reserved' }));
+        this.mqttHandler.publish('parking/' + spot!.parking + '/reservation/ended', spot!.name);
+        console.log('publish reservation ended');
 
         return deleteReservationById;
     }

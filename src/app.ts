@@ -10,22 +10,27 @@ import { dbConnection } from "./config/database.config";
 import { Route } from "~/types/route.type";
 import errorMiddleware from "~/middlewares/error.middleware";
 import cookieParser from "cookie-parser";
+import MQTTHandler from "./handlers/mqtt.handler";
+import { MqttClient } from "mqtt";
 
 class App {
     public app: express.Application;
     public env: string;
     public port: number;
+    public mqttHandler: MQTTHandler;
 
     constructor(routes: Route[]) {
         this.app = express();
         this.env = NODE_ENV || 'development';
         this.port = parseInt(PORT!);
+        this.mqttHandler = new MQTTHandler();
 
         this.connectToDatabase();
         this.initializeMiddlewares();
         this.initializeSwagger();
         this.initializeRoutes(routes);
         this.initializeErrorHandling();
+        this.initializeMqttHandler();
     }
 
     public listen() {
@@ -34,7 +39,6 @@ class App {
             console.log(`========= ENV: ${this.env} ==========`);
             console.log(`🚀 App listening on the port ${this.port}`);
             console.log(`Docs at ${URL}/docs`);
-            console.log(`=====================================`);
         });
     }
 
@@ -82,6 +86,9 @@ class App {
         this.app.use(errorMiddleware);
     }
 
+    private initializeMqttHandler() {
+        this.mqttHandler.configure();
+    }
 
 }
 

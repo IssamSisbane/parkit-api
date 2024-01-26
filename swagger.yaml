@@ -5,6 +5,14 @@ tags:
     description: users API
   - name: Auth
     description: auth API
+  - name: Spots
+    description: spots API
+  - name: Reservations
+    description: reservations API
+  - name: Parkings
+    description: parkings API
+  - name: Stats
+    description: stats API
 
 paths:
   ## INDEX
@@ -482,7 +490,7 @@ paths:
         500:
           description: "Server Error"
 
-  ## USERS
+  ## PARKINGS
   # [GET] parkings
   /parkings:
     get:
@@ -576,6 +584,116 @@ paths:
         - name: _id
           in: path
           description: parking _Id
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  ## STATS
+  # [POST] stats
+  /stats:
+    # [POST] parkings
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Stats
+      summary: Add Stats
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/Stats"
+      responses:
+        201:
+          description: "Created"
+        400:
+          description: "Bad Request"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  # [GET] stats
+  /stats/parkings:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Stats
+      summary: Find All Stats
+      responses:
+        200:
+          description: "OK"
+        500:
+          description: "Server Error"
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Stats
+      summary: Get stats between two dates
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                t1:
+                  type: string
+                  format: date-time
+                  description: Spot state
+                t2:
+                  type: string
+                  format: date-time
+                  description: Spot state
+      responses:
+        200:
+          description: "Created"
+        400:
+          description: "Bad Request"
+        500:
+          description: "Server Error"
+
+  # [GET] /stats/parking/parkingId
+  /stats/parking/{parkingId}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Stats
+      summary: get stats By parking
+      parameters:
+        - name: parkingId
+          in: path
+          description: parkingId
+          required: true
+      responses:
+        200:
+          description: "OK"
+        409:
+          description: "Conflict"
+        500:
+          description: "Server Error"
+
+  # [GET] /stats/parking/parkingId/last
+  /stats/parking/{parkingId}/last:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Stats
+      summary: get last stat By parking
+      parameters:
+        - name: parkingId
+          in: path
+          description: parkingId
           required: true
       responses:
         200:
@@ -714,6 +832,24 @@ definitions:
       rowNumber:
         type: number
         description: parking row number
+  ## Stats
+  Stats:
+    type: object
+    required:
+      - parkingId
+      - type
+      - timestamp
+    properties:
+      parkingId:
+        type: string
+        description: parking _id
+      type:
+        type: string
+        description: parking type
+      timestamp:
+        type: string
+        format: date-time
+        description: parking timestamp
 schemes:
   - https
   - http
