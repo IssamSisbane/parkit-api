@@ -1,24 +1,27 @@
-# Projet PARKITAPI
+# PARK-IT API Project
+Park It! API
+Welcome to the Park It! API documentation! This API is the core of the ParkIT! connected parking system. It is a smart parking project developed as part of the 5th year engineering project at Polytech Lyon. 
 
-API Park It!
-Bienvenue dans la documentation de l'API Park It! Cette API constitue le cœur du système ParkIT !. C'est un projet de parking connecté réalisé dans le cadre du projet tutoré de la 5e année d'ecole d'ingénieur à Polytech Lyon. L'api facilite la communication entre l'application mobile, les microcontrôleurs ESP32 et la base de données MongoDB. Elle offre des fonctionnalités pour gérer les parkings, les réservations et obtenir l'état en temps réel des places de stationnement.
+The API facilitates communication between the mobile application, ESP32 microcontrollers, and the MongoDB database. It offers functionalities to manage parking lots, reservations, and obtain real-time parking space availability.
+
+(learn more about the [parkit project](https://issamsisbane.github.io/portfolio/en/projects/park-it/))
 
 ## Installation
+1. Clone this repository to your local machine.
+2. Run `npm install` to install the dependencies.
+3. Start the server with `npm` start.
 
-Clonez ce référentiel sur votre machine locale.
-Exécutez `npm install` pour installer les dépendances.
-Démarrez le serveur avec `npm start`.
+## Deployment
+To deploy this project, simply build the Docker image and deploy it in a container. Then, access the API via port 3000.
 
-## Deploiement 
-
-Afin de deployer ce projet, il suffit de build l'image docker et de la deployer dans un conteneur. Ensuite, on accède à l'api via le port 3000.
-Pour que le projet fonctionne, il faut une base de données mongoDB et un broker MQTT dont il faut ajouter la configuration au fichier de config qui doit être composé de tous les éléments mentionné dans le DockerFile.
+For the project to work, you need a MongoDB database and an MQTT broker. Add their configuration to the config file, which should include all the elements mentioned in the Dockerfile.
 
 ## Definition
+To see the available routes, better understand, and test the API, the swagger file can be used. When the application is launched, the swagger is available at the following path: `/api/v1/docs/#`.
 
-Pour voir les routes disponibles, mieux comprendre et tester l'api. Le fichier swagger peut-être utilisé. Lorsque l'application est lancée, le swagger se trouve au chemin suivant `/api/v1/docs/#`.
+Here is a hosted version of the API: `https://parkit-api.onrender.com/api/v1/docs/#/`
 
- Voici une version hebergé de l'api : `https://parkit-api.onrender.com/api/v1/docs/#/`
+(it can be slow due to it serverless nature)
 
-## Sécurité
-L'API utilise JSON Web Tokens (JWT) pour l'authentification. Assurez-vous d'inclure le token dans l'en-tête de chaque requête protégée. Il faut d'abord crée un compte et se connecter pour récupèrer le token via les routes '/auth'.
+## Security
+The API uses JSON Web Tokens (JWT) for authentication. Make sure to include the token in the header of each protected request. You first need to create an account and log in to retrieve the token via the '/auth' routes.
